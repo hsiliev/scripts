@@ -46,8 +46,8 @@ eval "$(rbenv init -)"
 
 # aliases
 alias ll="ls -la"
-alias set_proxy="$HOME/scripts/set_proxy.sh"
-alias unset_proxy="$HOME/scripts/unset_proxy.sh"
+alias set-proxy="$HOME/scripts/set-proxy.sh"
+alias unset-proxy="$HOME/scripts/unset-proxy.sh"
 alias goddamit="$HOME/scripts/deploy.sh"
 
 # Java
