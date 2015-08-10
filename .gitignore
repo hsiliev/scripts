@@ -72,3 +72,4 @@ workspace/
 scripts/testApp.sh
 .fasd*
 .npm/
+.nvm/

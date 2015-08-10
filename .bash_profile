@@ -46,8 +46,8 @@ eval "$(rbenv init -)"
 
 # aliases
 alias ll="ls -la"
-alias set-proxy="$HOME/scripts/set-proxy.sh"
-alias unset-proxy="$HOME/scripts/unset-proxy.sh"
+alias set-proxy="source $HOME/scripts/set-proxy.sh"
+alias unset-proxy="source $HOME/scripts/unset-proxy.sh"
 alias goddamit="$HOME/scripts/deploy.sh"
 
 # Java
@@ -131,3 +131,10 @@ ulimit -n 65536 65536
 
 # fix for MacVIM, Python, YCM & vim incompatibility
 export DYLD_FORCE_FLAT_NAMESPACE=1
+
+#
+# nvm
+#
+export NVM_DIR=~/.nvm
+source $(brew --prefix nvm)/nvm.sh
+
