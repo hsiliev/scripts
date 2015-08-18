@@ -1,4 +1,4 @@
-.CFUserTextEncoding
+/.CFUserTextEncoding
 .IntelliJIdea14/
 .NERDTreeBookmarks
 .RubyMine70/
@@ -77,8 +77,6 @@ scripts/testApp.sh
 .Trash/
 .ICEauthority
 .Skype/
-.bashrc
-.bashrc.bak
 .cinnamon/
 .dbus/
 .dmrc
