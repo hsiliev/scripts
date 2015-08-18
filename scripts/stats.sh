@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -x -e
 
 cf curl /v2/apps/$1?async=true -X PUT -d '{"state":"STARTED"}'

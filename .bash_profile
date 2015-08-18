@@ -132,9 +132,5 @@ ulimit -n 65536 65536
 # fix for MacVIM, Python, YCM & vim incompatibility
 export DYLD_FORCE_FLAT_NAMESPACE=1
 
-#
-# nvm
-#
-export NVM_DIR=~/.nvm
-source $(brew --prefix nvm)/nvm.sh
-
+# go to workspace
+cd workspace

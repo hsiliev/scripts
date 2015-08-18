@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e -x
 
@@ -18,4 +18,3 @@ bosh -d ~/deployments/bosh-lite/cf.yml cck
 bosh -d ~/deployments/bosh-lite/diego.yml cck
 
 bosh -d ~/deployments/bosh-lite/docker-cache.yml cck
-

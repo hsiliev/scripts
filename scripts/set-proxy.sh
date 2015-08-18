@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo Setting proxy... 
+
 # Proxy Settings
 export http_proxy=http://proxy.wdf.sap.corp:8080
 export https_proxy=$http_proxy

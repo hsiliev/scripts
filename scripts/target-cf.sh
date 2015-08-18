@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 set -e -x
 
 cf api --skip-ssl-validation api.10.244.0.34.xip.io
