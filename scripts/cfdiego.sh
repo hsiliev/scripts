@@ -34,6 +34,9 @@ cf auth admin admin
 cf enable-feature-flag diego_docker
 
 gem cleanup
+bosh upload release https://bosh.io/d/github.com/cloudfoundry-incubator/garden-linux-release --skip-if-exists
+
+gem cleanup
 pushd ~/workspace/diego-release
   ./scripts/generate-deployment-manifest \
       ~/deployments/bosh-lite/director.yml \
@@ -46,9 +49,6 @@ pushd ~/workspace/diego-release
       > ~/deployments/bosh-lite/diego.yml
   bosh create release --force && bosh -t lite -n upload release && bosh -t lite -d ~/deployments/bosh-lite/diego.yml -n deploy
 popd
-
-gem cleanup
-bosh upload release https://bosh.io/d/github.com/cloudfoundry-incubator/garden-linux-release
 
 gem cleanup
 pushd ~/workspace/diego-docker-cache-release
