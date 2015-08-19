@@ -95,3 +95,4 @@ scripts/testApp.sh
 .profile
 .xsession-errors
 .uaac.yml
+.selected_editor

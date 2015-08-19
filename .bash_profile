@@ -133,4 +133,4 @@ ulimit -n 65536 65536
 export DYLD_FORCE_FLAT_NAMESPACE=1
 
 # go to workspace
-cd workspace
+cd $HOME/workspace
