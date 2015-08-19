@@ -7,7 +7,7 @@ STEMCELL_FILE=latest-bosh-stemcell-warden.tgz
 
 gem cleanup
 pushd ~/workspace
-  wget --show-progress -c "${STEMCELL_SOURCE}/${STEMCELL_FILE}" -O "$STEMCELL_FILE"
+  wget --progress=bar -c "${STEMCELL_SOURCE}/${STEMCELL_FILE}" -O "$STEMCELL_FILE"
   bosh -t lite -n -u admin -p admin upload stemcell --skip-if-exists $STEMCELL_FILE  
 popd
 
