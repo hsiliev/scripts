@@ -71,5 +71,5 @@ source $BASH_IT/bash_it.sh
 eval "$(direnv hook bash)"
 
 # go to workspace
-cd workspace
+cd $HOME/workspace
 
