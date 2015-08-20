@@ -12,7 +12,6 @@ if [ "$DIR" = "/Users/development/workspace/diego-docker-cache-release" ]; then
   MANIFEST=~/deployments/bosh-lite/docker-cache.yml
 fi
 
-gem cleanup
 bosh target 192.168.50.4 lite
 bosh -t lite -n create release --force
 bosh -t lite -n upload release
