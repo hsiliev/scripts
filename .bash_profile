@@ -134,3 +134,22 @@ export DYLD_FORCE_FLAT_NAMESPACE=1
 
 # go to workspace
 cd $HOME/workspace
+
+# abacus dev
+export ABACUS_HOME=/Users/development/workspace/cf-abacus
+
+function abacus-module {
+  local p
+  local f
+
+   
+  for p in `echo $ABACUS_HOME | tr ':' '\n'`; do
+    f=`find ${p}/lib -type d -not -path '*/.*' | grep "${1}" | awk '{ print length, $0 }' | sort -n | cut -d" " -f2- | head -n 1`
+    if [ -n "$f" ]; then
+      cd $f
+      return
+    fi
+  done
+}
+
+
