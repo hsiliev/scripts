@@ -20,7 +20,7 @@ pushd ~/workspace/diego-release
 popd
 
 pushd ~/workspace/cf-release
-  ./generate_deployment_manifest warden \
+  ./scripts/generate_deployment_manifest warden \
       ~/deployments/bosh-lite/director.yml \
       ~/workspace/diego-release/stubs-for-cf-release/enable_consul_with_cf.yml \
       ~/workspace/diego-release/stubs-for-cf-release/enable_diego_ssh_in_cc.yml \
