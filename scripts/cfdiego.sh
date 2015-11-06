@@ -20,19 +20,17 @@ pushd ~/workspace/diego-release
 popd
 
 pushd ~/workspace/cf-release
-  ./scripts/generate_deployment_manifest warden \
-      ~/deployments/bosh-lite/director.yml \
-      ~/workspace/diego-release/stubs-for-cf-release/enable_consul_with_cf.yml \
-      ~/workspace/diego-release/stubs-for-cf-release/enable_diego_ssh_in_cf.yml \
-      > ~/deployments/bosh-lite/cf.yml
+  scripts/generate-bosh-lite-dev-manifest
+  cp bosh-lite/deployments/cf.yml ~/deployments/bosh-lite/cf.yml
   bosh create release --force && bosh -t lite -n upload release && bosh -t lite -d ~/deployments/bosh-lite/cf.yml -n deploy
 popd
 
-cf api --skip-ssl-validation api.10.244.0.34.xip.io
+cf api --skip-ssl-validation api.bosh-lite.com
 cf auth admin admin
 cf enable-feature-flag diego_docker
 
 bosh upload release https://bosh.io/d/github.com/cloudfoundry-incubator/garden-linux-release --skip-if-exists || true
+bosh upload release https://bosh.io/d/github.com/cloudfoundry-incubator/etcd-release --skip-if-exists || true
 
 pushd ~/workspace/diego-release
   ./scripts/generate-deployment-manifest \

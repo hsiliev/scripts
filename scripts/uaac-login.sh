@@ -1,5 +1,6 @@
 #!/bin/bash
+set -e
 
-uaac target uaa.10.244.0.34.xip.io
+uaac target --skip-ssl-validation https://uaa.bosh-lite.com
 uaac token client get admin -s admin-secret
 uaac contexts

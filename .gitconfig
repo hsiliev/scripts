@@ -42,3 +42,7 @@
   mtime = 1429711468
   git-committer-name = Georgi Sabev
   git-committer-email = georgethebeatle@gmail.com
+[filter "hawser"]
+	clean = git hawser clean %f
+	smudge = git hawser smudge %f
+	required = true

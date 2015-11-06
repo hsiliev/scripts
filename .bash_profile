@@ -52,7 +52,8 @@ alias goddamit="$HOME/scripts/deploy.sh"
 
 # Java
 #export JAVA_HOME=`/usr/libexec/java_home -v 1.6`
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home/
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_66.jdk/Contents/Home/
+launchctl setenv JAVA_HOME $JAVA_HOME
 
 # Maven
 export M2_HOME=$(brew --prefix maven)/libexec
