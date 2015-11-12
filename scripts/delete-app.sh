@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cf delete -f -r $1
+cf delete -f -r $1 &
