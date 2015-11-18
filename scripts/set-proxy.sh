@@ -10,5 +10,9 @@ launchctl setenv http_proxy $http_proxy
 launchctl setenv https_proxy $https_proxy
 launchctl setenv no_proxy $no_proxy
 
+# npm proxy
+npm config set proxy http://proxy.wdf.sap.corp:8080
+npm config set https-proxy http://proxy.wdf.sap.corp:8080
+
 # Reset DNS cache
 $HOME/scripts/dnsflush.sh
