@@ -126,8 +126,10 @@ eval "$(direnv hook bash)"
 launchctl setenv PATH $PATH
 
 #
-# increase open file limit
-# http://blog.mact.me/2014/10/22/yosemite-upgrade-changes-open-file-limit
+# increase process open file limit
+#
+# requires global settings in /etc/launchd.conf to contain:
+# limit maxfiles 65536 65536 
 #
 ulimit -n 65536 65536
 
