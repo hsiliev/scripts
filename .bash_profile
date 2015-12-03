@@ -126,12 +126,13 @@ eval "$(direnv hook bash)"
 launchctl setenv PATH $PATH
 
 #
-# increase process open file limit
+# ensure we have increased process open file limit
 #
-# requires global settings in /etc/launchd.conf to contain:
-# limit maxfiles 65536 65536 
+# The real increase happens on system level via
+# http://docs.basho.com/riak/latest/ops/tuning/open-files-limit/
 #
-ulimit -n 65536 65536
+ulimit -n 65536
+ulimit -u 2048
 
 # fix for MacVIM, Python, YCM & vim incompatibility
 export DYLD_FORCE_FLAT_NAMESPACE=1
