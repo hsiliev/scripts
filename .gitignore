@@ -23,3 +23,6 @@ vim/
 workspace/
 workspace
 scripts/testApp.sh
+Calibre Library/
+*.txt
+
