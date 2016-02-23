@@ -44,6 +44,9 @@ export PATH=$PATH:$GOPATH/bin:$HOME/scripts:$HOME/bin
 # rbenv
 eval "$(rbenv init -)"
 
+export NVM_DIR=~/.nvm
+. $(brew --prefix nvm)/nvm.sh
+
 # aliases
 alias ll="ls -la"
 alias set-proxy="source $HOME/scripts/set-proxy.sh"
@@ -142,6 +145,7 @@ cd $HOME/workspace
 
 # abacus dev
 export ABACUS_HOME=/Users/development/workspace/cf-abacus
+export NO_ISTANBUL=true
 
 function abacus-module {
   local p

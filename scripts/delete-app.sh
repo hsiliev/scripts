@@ -1,3 +1,5 @@
 #!/bin/bash
 
-cf delete -f -r $1 &
+set -e
+
+cf delete -f -r $1
