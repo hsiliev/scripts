@@ -2,4 +2,4 @@
 
 set -e
 
-cf us $2 $1
+cf unbind-service $2 $1
