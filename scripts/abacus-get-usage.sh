@@ -36,4 +36,4 @@ echo "Using $USAGE_REPORTING"
 echo ""
 
 echo "Getting organization $1 ($ORG_GUID) from $USAGE_REPORTING ..."
-curl -sH "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://$USAGE_REPORTING/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .spaces[0]
+curl -sH "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://$USAGE_REPORTING/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .spaces[0].windows[4]
