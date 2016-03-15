@@ -4,4 +4,4 @@ set -e
 
 SERVICE=$1
 
-cf apps | tail -n +5 | awk '{print $1}' | xargs -n 1 ~/scripts/bind-app.sh $SERVICE
+cf apps | tail -n +5 | awk '{print $1}' | xargs -P 20 -n 1 ~/scripts/bind-app.sh $SERVICE

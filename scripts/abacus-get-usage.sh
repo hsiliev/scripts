@@ -30,10 +30,23 @@ ORG_GUID=$(cf org $1 --guid)
 echo "Done."
 echo ""
 
-echo "Getting abacus-usage-reporting URL ..."
-USAGE_REPORTING=$(cf app abacus-usage-reporting | awk '{if (NR == 7) {print $2}}')
-echo "Using $USAGE_REPORTING"
+echo "Getting abacus-usage-reporting domain ..."
+APP_URL=$(cf app abacus-usage-reporting-0 | awk '{if (NR == 7) {print $3}}')
+if [[ $APP_URL == *"abacus-usage-reporting-0"* ]]; then
+  DOMAIN=${APP_URL/abacus-usage-reporting-0./}
+else
+  DOMAIN=${APP_URL/abacus-usage-reporting./}
+fi
+echo "Using domain $DOMAIN"
 echo ""
 
-echo "Getting organization $1 ($ORG_GUID) from $USAGE_REPORTING ..."
-curl -sH "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://$USAGE_REPORTING/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .spaces[0].windows[4]
+echo "Getting organization $1 ($ORG_GUID) from $DOMAIN ..."
+set +e
+OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .spaces[0].windows[4])
+if [ "$OUTPUT" == "null" ]; then
+  echo ""
+  echo "No report data! Getting original response:"
+  curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage"
+else
+  echo $OUTPUT | jq .
+fi

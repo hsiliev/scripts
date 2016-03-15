@@ -27,4 +27,4 @@ echo "Using $BRIDGE"
 echo "" 
 
 echo "Getting statistics ..."
-curl -sH "Authorization: bearer $TOKEN" "https://$BRIDGE/v1/cf/bridge" | jq .
+curl -sH "Authorization: bearer $TOKEN" "https://$BRIDGE/v1/cf/bridge" | jq 'del(.bridge.performance)'

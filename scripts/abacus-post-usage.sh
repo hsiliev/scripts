@@ -37,10 +37,21 @@ SPACE_GUID=$(cf space $SPACE --guid)
 echo "Done."
 echo ""
 
+echo "Getting abacus-usage-collector domain ..."
+APP_URL=$(cf app abacus-usage-collector-0 | awk '{if (NR == 7) {print $3}}')
+if [[ $APP_URL == *"abacus-usage-collector-0"* ]]; then
+  DOMAIN=${APP_URL/abacus-usage-collector-0./}
+else
+  DOMAIN=${APP_URL/abacus-usage-collector./}
+fi
+echo "Using domain $DOMAIN"
+echo ""
+
+
 DATE_IN_MS=$(date +%s000)
 BODY="{\"usage\":[{\"start\":$DATE_IN_MS,\"end\":$DATE_IN_MS,\"organization_id\":\"$ORG_GUID\",\"space_id\":\"$SPACE_GUID\",\"resource_id\":\"linux-container\",\"plan_id\":\"basic\",\"resource_instance_id\":\"1fb61c1f-2db3-4235-9934-00097845b80d\",\"measured_usage\":[{\"measure\":\"instance_memory\",\"quantity\":512},{\"measure\":\"running_instances\",\"quantity\":1}]}]}"
 echo "Will submit usage $(echo $BODY | jq .)"
 echo ""
 
-curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" -X POST -d $BODY https://abacus-usage-collector.cfapps.sap.hana.ondemand.com/v1/metering/collected/usage
+curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" -X POST -d $BODY "https://abacus-usage-collector.$DOMAIN/v1/metering/collected/usage"
 echo "Usage POSTed successfully"
