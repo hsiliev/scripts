@@ -54,8 +54,7 @@ alias unset-proxy="source $HOME/scripts/unset-proxy.sh"
 alias goddamit="$HOME/scripts/deploy.sh"
 
 # Java
-#export JAVA_HOME=`/usr/libexec/java_home -v 1.6`
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_66.jdk/Contents/Home/
+export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
 launchctl setenv JAVA_HOME $JAVA_HOME
 
 # Maven

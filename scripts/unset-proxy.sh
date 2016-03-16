@@ -13,6 +13,12 @@ launchctl unsetenv no_proxy
 npm config delete proxy
 npm config delete https-proxy
 
+# java proxy
+if [ -n "$ORIGINAL_JAVA_OPTS" ]; then
+  export JAVA_OPTS=$ORIGINAL_JAVA_OPTS
+else
+  echo "Cannot remove Java proxy !!!"
+fi
+
 # Reset DNS cache
 $HOME/scripts/dnsflush.sh
-
