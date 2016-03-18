@@ -20,5 +20,10 @@ else
   echo "Cannot remove Java proxy !!!"
 fi
 
+# maven proxy
+if [ -e $HOME/.m2/settings.xml ]; then
+  mv $HOME/.m2/settings.xml $HOME/.m2/inactive-settings.xml
+fi
+
 # Reset DNS cache
 $HOME/scripts/dnsflush.sh

@@ -24,7 +24,15 @@ function mapRoutes {
   done
 }
 
+unbind-all-apps.sh db
+
+echo "Delete apps in parallel. We expect errors due to missing routes..."
+set +e
 delete-all-apps.sh
+set -e
+echo "Delete apps. This time errors are not ok."
+delete-all-apps.sh
+
 if [ "$1" = "--dropDatabase" ]; then
   echo ""
   echo "!!!! Dropping database !!!!"
@@ -37,13 +45,22 @@ npm run cfstage -- large
 cf d -r -f abacus-pouchserver
 cf d -r -f abacus-authserver-plugin
 
+mapRoutes abacus-usage-collector 6
+mapRoutes abacus-usage-reporting 6
+
 if [ "$1" = "--dropDatabase" ]; then
   echo "Creating new DB service instance ..."
   cf cs mongodb-3.0.7-lite free db
 fi
+
+echo "Building CF Bridge ..."
+cd $HOME/workspace/cf-abacus/lib/cf/bridge
+npm install
+npm run babel
+npm run lint
+npm test
+npm run cfpack
+npm run cfpush
+
 bind-all-apps.sh db
-
 start-all-apps.sh
-
-mapRoutes abacus-usage-collector 6
-mapRoutes abacus-usage-reporting 6

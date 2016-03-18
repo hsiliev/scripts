@@ -25,5 +25,26 @@ else
   echo "Java proxy already set"
 fi
 
+# maven proxy
+if [ -e $HOME/.m2/inactive-settings.xml ]; then
+  mv $HOME/.m2/inactive-settings.xml $HOME/.m2/settings.xml
+else
+  cat << EOF > $HOME/.m2/settings.xml
+  <settings xmlns="http://maven.apache.org/SETTINGS/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
+    <proxies>
+     <proxy>
+        <id>sap-proxy</id>
+        <active>true</active>
+        <protocol>http</protocol>
+        <host>proxy.wdf.sap.corp</host>
+        <port>8080</port>
+        <nonProxyHosts>*.wdf.sap.corp</nonProxyHosts>
+      </proxy>
+    </proxies>
+  </settings>
+EOF
+fi
+
 # Reset DNS cache
 $HOME/scripts/dnsflush.sh
