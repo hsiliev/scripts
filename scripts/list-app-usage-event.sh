@@ -23,8 +23,16 @@ echo ""
 
 if [ -z "$1" ]; then
   echo "Get app usage events metadata ..."
-  curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1" | jq 'del(.resources)'
+  curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1" | jq 'del(.resources)'  fi
 else
-  echo "Get app usage events page $1..."
-  curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1&page=$1"
+  if [ "$1" == "--all" ]; then
+    echo "Listing page $1 usage events ..."
+    curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000&page=$2" | jq .
+    echo ""
+    echo "Total page info:"
+    curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000" | jq 'del(.resources)'
+  else
+    echo "Get app usage events page $1..."
+    curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1&page=$1"
+  fi
 fi

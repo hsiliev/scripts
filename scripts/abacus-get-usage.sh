@@ -26,7 +26,13 @@ echo "Token obtained"
 echo ""
 
 echo "Get organization $1 guid ..."
+set +e
 ORG_GUID=$(cf org $1 --guid)
+if [ $? != 0 ]; then
+  echo "Invalid organization !!!"
+  exit 1
+fi
+set -e
 echo "Done."
 echo ""
 

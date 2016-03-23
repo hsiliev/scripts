@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -x
+set -e
 
 function mapRoutes {
   if [ -z "$1" ]; then
