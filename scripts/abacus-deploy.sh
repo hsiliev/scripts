@@ -2,6 +2,17 @@
 
 set -e
 
+function show_help {
+  cat << EOF
+Usage: ${0##*/} [-hdb]
+
+Deploy Abacus
+  -h    display this help and exit
+  -d    drop database
+  -b    deploy cf-bridge
+EOF
+}
+
 function mapRoutes {
   if [ -z "$1" ]; then
      echo "Cannot map app without a name !"
@@ -24,16 +35,46 @@ function mapRoutes {
   done
 }
 
-unbind-all-apps.sh db
+# A POSIX variable
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
+# Initialize our own variables
+drop_database=0
+deploy_bridge=0
+
+while getopts "hdb:" opt; do
+    case "$opt" in
+      h|\?)
+        show_help
+        exit 0
+        ;;
+      d)  drop_database=1
+        ;;
+      f)  deploy_bridge=1
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+[ "$1" = "--" ] && shift
+
+echo "Arguments: deploy_bridge='$deploy_bridge', drop_database='$drop_database', Leftovers: $@"
+echo ""
+
+set +e
+unbind-all-apps.sh db
+set -e
+
+echo ""
 echo "Delete apps in parallel. We expect errors due to missing routes..."
 set +e
 delete-all-apps.sh
 set -e
+echo ""
 echo "Delete apps. This time errors are not ok."
 delete-all-apps.sh
 
-if [ "$1" = "--dropDatabase" ]; then
+if [ $drop_database = 1 ]; then
   echo ""
   echo "!!!! Dropping database !!!!"
   echo ""
@@ -48,19 +89,22 @@ cf d -r -f abacus-authserver-plugin
 mapRoutes abacus-usage-collector 6
 mapRoutes abacus-usage-reporting 6
 
-if [ "$1" = "--dropDatabase" ]; then
+if [ $drop_database = 1 ]; then
   echo "Creating new DB service instance ..."
   cf cs mongodb-3.0.7-lite free db
 fi
 
-echo "Building CF Bridge ..."
-cd $HOME/workspace/cf-abacus/lib/cf/bridge
-npm install
-npm run babel
-npm run lint
-npm test
-npm run cfpack
-npm run cfpush
+if [ $deploy_bridge = 1 ]; then
+  echo "Building CF Bridge ..."
+  pushd $HOME/workspace/cf-abacus/lib/cf/bridge
+    npm install
+    npm run babel
+    npm run lint
+    npm test
+    npm run cfpack
+    npm run cfpush
+  popd
+fi
 
 bind-all-apps.sh db
 start-all-apps.sh
