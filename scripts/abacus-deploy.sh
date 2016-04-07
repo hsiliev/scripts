@@ -42,7 +42,7 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 drop_database=0
 deploy_bridge=0
 
-while getopts "hdb:" opt; do
+while getopts "hdb" opt; do
     case "$opt" in
       h|\?)
         show_help
@@ -50,7 +50,7 @@ while getopts "hdb:" opt; do
         ;;
       d)  drop_database=1
         ;;
-      f)  deploy_bridge=1
+      b)  deploy_bridge=1
         ;;
     esac
 done
