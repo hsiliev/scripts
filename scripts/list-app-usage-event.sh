@@ -1,10 +1,46 @@
 #!/bin/bash
 set -e
 
+function show_help {
+  cat << EOF
+Usage: ${0##*/} [-ha] <page number>
+
+Shows app usage events
+  -h    display this help and exit
+  -a    show all events
+EOF
+}
+
 if [ -z "$CF_CLIENT_ID" ] || [ -z "$CF_CLIENT_SECRET" ]; then
   echo "Missing CF_CLIENT_ID or CF_CLIENT_SECRET !"
   exit 1
 fi
+
+# A POSIX variable
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+# Initialize our own variables
+show_all=0
+page=$1
+
+while getopts "ha:" opt; do
+    case "$opt" in
+      h|\?)
+        show_help
+        exit 0
+        ;;
+      a)
+        show_all=1
+        page=$OPTARG
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+[ "$1" = "--" ] && shift
+
+echo "Arguments: show_all='$show_all', page='$page', Leftovers: $@"
+echo ""
 
 echo "Obtaining API endpoint URL ..."
 API=$(cf api | awk '{print $3}')
@@ -21,18 +57,23 @@ fi
 echo "Token obtained"
 echo ""
 
-if [ -z "$1" ]; then
-  echo "Get app usage events metadata ..."
-  curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1" | jq 'del(.resources)'  fi
+echo "App usage events metadata:"
+if [ $show_all = 1 ]; then
+  curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000" | jq 'del(.resources)'
 else
-  if [ "$1" == "--all" ]; then
-    echo "Listing page $1 usage events ..."
-    curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000&page=$2" | jq .
-    echo ""
-    echo "Total page info:"
-    curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000" | jq 'del(.resources)'
-  else
-    echo "Get app usage events page $1..."
-    curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1&page=$1"
-  fi
+  curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1" | jq 'del(.resources)'
+fi
+echo ""
+
+if [ -z $page ]; then
+  echo "No page specified !"
+  exit 1
+fi
+
+if [ $show_all = 1 ]; then
+  echo "Listing page $page with 10000 usage events ..."
+  curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000&page=$page" | jq .
+else
+  echo "Get app usage event #$page..."
+  curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1&page=$page"
 fi
