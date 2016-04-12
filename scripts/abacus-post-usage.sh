@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
@@ -31,7 +32,7 @@ echo "Done."
 echo ""
 
 echo "List spaces for org $1 ..."
-SPACE=$(cf org abacus | awk '{ if (NR==7) {print $2}}')
+SPACE=$(cf org $1 | awk '{ if (NR==7) {print $2}}')
 echo "Get space $SPACE guid ..."
 SPACE_GUID=$(cf space $SPACE --guid)
 echo "Done."
@@ -49,9 +50,9 @@ echo ""
 
 
 DATE_IN_MS=$(date +%s000)
-BODY="{\"usage\":[{\"start\":$DATE_IN_MS,\"end\":$DATE_IN_MS,\"organization_id\":\"$ORG_GUID\",\"space_id\":\"$SPACE_GUID\",\"resource_id\":\"linux-container\",\"plan_id\":\"basic\",\"consumer_id\":\"app:1fb61c1f-2db3-4235-9934-00097845b80d\",\"resource_instance_id\":\"1fb61c1f-2db3-4235-9934-00097845b80d\",\"measured_usage\":[{\"measure\":\"instance_memory\",\"quantity\":512},{\"measure\":\"running_instances\",\"quantity\":1}]}]}"
+BODY="{\"start\":$DATE_IN_MS,\"end\":$DATE_IN_MS,\"organization_id\":\"$ORG_GUID\",\"space_id\":\"$SPACE_GUID\",\"resource_id\":\"linux-container\",\"plan_id\":\"basic\",\"consumer_id\":\"app:1fb61c1f-2db3-4235-9934-00097845b80d\",\"resource_instance_id\":\"1fb61c1f-2db3-4235-9934-00097845b80d\",\"measured_usage\":[{\"measure\":\"current_instance_memory\",\"quantity\":512},{\"measure\":\"current_running_instances\",\"quantity\":1},{\"measure\":\"previous_instance_memory\",\"quantity\":0},{\"measure\":\"previous_running_instances\",\"quantity\":0}]}"
 echo "Will submit usage $(echo $BODY | jq .)"
 echo ""
 
 curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" -X POST -d $BODY "https://abacus-usage-collector.$DOMAIN/v1/metering/collected/usage"
-echo "Usage POSTed successfully"
+echo "Usage POSTed"
