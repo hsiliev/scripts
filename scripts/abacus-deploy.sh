@@ -7,8 +7,9 @@ function show_help {
 Usage: ${0##*/} [-hdb]
 
 Deploy Abacus
-  -h    display this help and exit
+  -h,-? display this help and exit
   -d    drop database
+  -s    create and bind to DB service
   -b    deploy cf-bridge
 EOF
 }
@@ -41,8 +42,9 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 # Initialize our own variables
 drop_database=0
 deploy_bridge=0
+db_service=0
 
-while getopts "hdb" opt; do
+while getopts "h?dbs" opt; do
     case "$opt" in
       h|\?)
         show_help
@@ -52,18 +54,26 @@ while getopts "hdb" opt; do
         ;;
       b)  deploy_bridge=1
         ;;
+      s)  db_service=1
+        ;;
     esac
 done
 
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
-echo "Arguments: deploy_bridge='$deploy_bridge', drop_database='$drop_database', Leftovers: $@"
+echo "Arguments:"
+echo "  deploy_bridge='$deploy_bridge'"
+echo "  drop_database='$drop_database'"
+echo "  db_service='$db_service'"
+echo "  leftovers: $@"
 echo ""
 
-set +e
-unbind-all-apps.sh db
-set -e
+if [ $db_service = 1 ]; then
+  set +e
+  unbind-all-apps.sh db
+  set -e
+fi
 
 echo ""
 echo "Delete apps in parallel. We expect errors due to missing routes..."
@@ -71,7 +81,7 @@ set +e
 delete-all-apps.sh
 set -e
 echo ""
-echo "Delete apps. This time errors are not ok."
+echo "Delete apps. This time errors are NOT ok."
 delete-all-apps.sh
 
 if [ $drop_database = 1 ]; then
@@ -106,5 +116,15 @@ if [ $deploy_bridge = 1 ]; then
   popd
 fi
 
-bind-all-apps.sh db
+if [ $db_service = 1 ]; then
+  bind-all-apps.sh db
+fi
+
 start-all-apps.sh
+cf a
+
+echo "Restarting failed apps ..."
+restart-failed-apps.sh
+cf a
+
+echo "Deploy finished"
