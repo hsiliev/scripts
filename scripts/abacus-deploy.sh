@@ -11,6 +11,7 @@ Deploy Abacus
   -d    drop database
   -s    create and bind to DB service
   -b    deploy cf-bridge
+  -c    copy config
 EOF
 }
 
@@ -29,7 +30,12 @@ function mapRoutes {
   local APP_URL=$(cf app $APP_NAME-0 | awk '{if (NR == 7) {print $2}}')
   local APP_DOMAIN=${APP_URL/$APP_NAME-0./}
 
-  echo "Mapping $INSTANCES of $APP_NAME in $APP_DOMAIN domain ..."
+  if [ -z "$APP_DOMAIN" ]; then
+    echo "Unknown domain !"
+    exit 1
+  fi
+
+  echo "Mapping $2 (0-$INSTANCES) instances of $APP_NAME in $APP_DOMAIN domain ..."
   for i in `seq 0 $INSTANCES`;
   do
     cf map-route "$APP_NAME-$i" $APP_DOMAIN --hostname "$APP_NAME"
@@ -43,8 +49,9 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 drop_database=0
 deploy_bridge=0
 db_service=0
+copy_config=0
 
-while getopts "h?dbs" opt; do
+while getopts "h?dbsc" opt; do
     case "$opt" in
       h|\?)
         show_help
@@ -56,6 +63,8 @@ while getopts "h?dbs" opt; do
         ;;
       s)  db_service=1
         ;;
+      c)  copy_config=1
+        ;;
     esac
 done
 
@@ -66,8 +75,15 @@ echo "Arguments:"
 echo "  deploy_bridge='$deploy_bridge'"
 echo "  drop_database='$drop_database'"
 echo "  db_service='$db_service'"
+echo "  copy_config='$copy_config'"
 echo "  leftovers: $@"
 echo ""
+
+if [ $copy_config = 1 ]; then
+  echo "Copying config ..."
+  cp -R ~/workspace/abacus-config/* ~/workspace/cf-abacus
+  echo ""
+fi
 
 if [ $db_service = 1 ]; then
   set +e
