@@ -127,4 +127,6 @@ echo "Restarting failed apps ..."
 restart-failed-apps.sh
 cf a
 
+echo ""
+echo ""
 echo "Deploy finished"
