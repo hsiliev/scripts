@@ -10,7 +10,6 @@ Deploy Abacus
   -h,-? display this help and exit
   -d    drop database
   -s    create and bind to DB service
-  -b    deploy cf-bridge
   -c    copy config
 EOF
 }
@@ -47,19 +46,16 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
 # Initialize our own variables
 drop_database=0
-deploy_bridge=0
 db_service=0
 copy_config=0
 
-while getopts "h?dbsc" opt; do
+while getopts "h?dsc" opt; do
     case "$opt" in
       h|\?)
         show_help
         exit 0
         ;;
       d)  drop_database=1
-        ;;
-      b)  deploy_bridge=1
         ;;
       s)  db_service=1
         ;;
@@ -72,7 +68,6 @@ shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
 echo "Arguments:"
-echo "  deploy_bridge='$deploy_bridge'"
 echo "  drop_database='$drop_database'"
 echo "  db_service='$db_service'"
 echo "  copy_config='$copy_config'"
@@ -85,9 +80,7 @@ if [ $copy_config = 1 ]; then
   echo ""
   echo "Rebuilding to apply config changes ..."
   echo ""
-  pushd ~/workspace/cf-abacus
-    npm run prepare
-  popd
+  cd ~/workspace/cf-abacus && npm run rebuild
 fi
 
 if [ $db_service = 1 ]; then
@@ -107,7 +100,9 @@ delete-all-apps.sh
 
 if [ $drop_database = 1 ]; then
   echo ""
-  echo "!!!! Dropping database !!!!"
+  echo "!!!! Dropping database in 5 seconds !!!!"
+  echo ""
+  echo "Interrupt this script with Ctrl-C to keep the DB intact"
   echo ""
   sleep 5s
   cf ds db -f
@@ -122,19 +117,7 @@ mapRoutes abacus-usage-reporting 6
 
 if [ $drop_database = 1 ]; then
   echo "Creating new DB service instance ..."
-  cf cs mongodb-3.0.7-lite free db
-fi
-
-if [ $deploy_bridge = 1 ]; then
-  echo "Building CF Bridge ..."
-  pushd $HOME/workspace/cf-abacus/lib/cf/bridge
-    npm install
-    npm run babel
-    npm run lint
-    npm test
-    npm run cfpack
-    npm run cfpush
-  popd
+  cf cs mongodb-beta v3.0-container db
 fi
 
 if [ $db_service = 1 ]; then
