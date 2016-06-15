@@ -1,6 +1,3 @@
-[user]
-	name = Hristo Iliev
-	email = hsiliev@gmail.com
 [core]
   pager = less -FXRS -x2
   editor = vim
@@ -36,13 +33,10 @@
   trustExitCode = true
 [url "git@github.com:"]
   pushInsteadOf = https://github.com/
-[duet "env"]
-  git-author-name = Hristo Iliev
-  git-author-email = hsiliev@gmail.com
-  mtime = 1429711468
-  git-committer-name = Georgi Sabev
-  git-committer-email = georgethebeatle@gmail.com
 [filter "hawser"]
 	clean = git hawser clean %f
 	smudge = git hawser smudge %f
 	required = true
+[user]
+	name = Hristo Iliev
+	email = hsiliev@gmail.com

@@ -83,6 +83,11 @@ if [ $copy_config = 1 ]; then
   echo "Copying config ..."
   cp -R ~/workspace/abacus-config/* ~/workspace/cf-abacus
   echo ""
+  echo "Rebuilding to apply config changes ..."
+  echo ""
+  pushd ~/workspace/cf-abacus
+    npm run prepare
+  popd
 fi
 
 if [ $db_service = 1 ]; then

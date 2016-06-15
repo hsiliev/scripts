@@ -29,8 +29,8 @@ echo "Get organization $1 guid ..."
 set +e
 ORG_GUID=$(cf org $1 --guid)
 if [ $? != 0 ]; then
-  echo "Invalid organization !!!"
-  exit 1
+  echo "Organization $1 not found. Assuming this is org GUID ..."
+  ORG_GUID=$1
 fi
 set -e
 echo "Done."
