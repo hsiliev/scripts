@@ -73,3 +73,6 @@ eval "$(direnv hook bash)"
 # go to workspace
 cd $HOME/workspace
 
+
+export NVM_DIR="/home/hsiliev/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
