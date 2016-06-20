@@ -2,18 +2,6 @@
 
 set -e
 
-function show_help {
-  cat << EOF
-Usage: ${0##*/} [-hdb]
-
-Deploy Abacus
-  -h,-? display this help and exit
-  -d    drop database
-  -s    create and bind to DB service
-  -c    copy config
-EOF
-}
-
 function mapRoutes {
   if [ -z "$1" ]; then
      echo "Cannot map app without a name !"
@@ -41,25 +29,45 @@ function mapRoutes {
   done
 }
 
+function show_help {
+  cat << EOF
+Usage: ${0##*/} [-hdb]
+
+Deploy Abacus
+  -h,-? display this help and exit
+  -x    drop database service instance
+  -c    copy config
+  -s    stage applications
+  -d    create and bind service instance
+  -m    map app routes
+EOF
+}
+
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
 # Initialize our own variables
 drop_database=0
-db_service=0
+create_database=0
 copy_config=0
+stage_apps=0
+map_routes=0
 
-while getopts "h?dsc" opt; do
+while getopts "h?xdcsm" opt; do
     case "$opt" in
       h|\?)
         show_help
         exit 0
         ;;
-      d)  drop_database=1
-        ;;
-      s)  db_service=1
+      x)  drop_database=1
         ;;
       c)  copy_config=1
+        ;;
+      s)  stage_apps=1
+        ;;
+      d)  create_database=1
+        ;;
+      m)  map_routes=1
         ;;
     esac
 done
@@ -69,8 +77,10 @@ shift $((OPTIND-1))
 
 echo "Arguments:"
 echo "  drop_database='$drop_database'"
-echo "  db_service='$db_service'"
+echo "  create_database='$create_database'"
 echo "  copy_config='$copy_config'"
+echo "  stage_apps='$stage_apps'"
+echo "  map_routes='$map_routes'"
 echo "  leftovers: $@"
 echo ""
 
@@ -83,20 +93,22 @@ if [ $copy_config = 1 ]; then
   cd ~/workspace/cf-abacus && npm run rebuild
 fi
 
-if [ $db_service = 1 ]; then
+if [ $drop_database = 1 ]; then
   set +e
   unbind-all-apps.sh db
   set -e
 fi
 
-echo ""
-echo "Delete apps in parallel. We expect errors due to missing routes..."
-set +e
-delete-all-apps.sh
-set -e
-echo ""
-echo "Delete apps. This time errors are NOT ok."
-delete-all-apps.sh
+if [ $stage_apps = 1 ]; then
+  echo ""
+  echo "Delete apps in parallel. We expect errors due to missing routes..."
+  set +e
+  delete-all-apps.sh
+  set -e
+  echo ""
+  echo "Delete apps. This time errors are NOT ok."
+  delete-all-apps.sh
+fi
 
 if [ $drop_database = 1 ]; then
   echo ""
@@ -108,19 +120,20 @@ if [ $drop_database = 1 ]; then
   cf ds db -f
 fi
 
-npm run cfstage -- large
-cf d -r -f abacus-pouchserver
-cf d -r -f abacus-authserver-plugin
-
-mapRoutes abacus-usage-collector 6
-mapRoutes abacus-usage-reporting 6
-
-if [ $drop_database = 1 ]; then
-  echo "Creating new DB service instance ..."
-  cf cs mongodb-beta v3.0-container db
+if [ $stage_apps = 1 ]; then
+  npm run cfstage -- large
+  cf d -r -f abacus-pouchserver
+  cf d -r -f abacus-authserver-plugin
 fi
 
-if [ $db_service = 1 ]; then
+if [ $map_routes = 1 ]; then
+  mapRoutes abacus-usage-collector 6
+  mapRoutes abacus-usage-reporting 6
+fi
+
+if [ $create_database = 1 ]; then
+  echo "Creating new DB service instance ..."
+  cf cs mongodb v3.0-container db
   bind-all-apps.sh db
 fi
 
