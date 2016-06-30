@@ -122,9 +122,10 @@ fi
 
 if [ $stage_apps = 1 ]; then
   npm run cfstage -- large
-  cf d -r -f abacus-pouchserver
-  cf d -r -f abacus-authserver-plugin
 fi
+
+cf d -r -f abacus-pouchserver
+cf d -r -f abacus-authserver-plugin
 
 if [ $map_routes = 1 ]; then
   mapRoutes abacus-usage-collector 6
@@ -132,6 +133,7 @@ if [ $map_routes = 1 ]; then
 fi
 
 if [ $create_database = 1 ]; then
+  echo ""
   echo "Creating new DB service instance ..."
   cf cs mongodb v3.0-container db
   bind-all-apps.sh db
@@ -140,6 +142,7 @@ fi
 start-all-apps.sh
 cf a
 
+echo ""
 echo "Restarting failed apps ..."
 restart-failed-apps.sh
 cf a
