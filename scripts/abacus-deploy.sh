@@ -38,7 +38,7 @@ Deploy Abacus
   -x    drop database service instance
   -c    copy config
   -s    stage applications
-  -d    create and bind service instance
+  -d    create service instance
   -m    map app routes
 EOF
 }
@@ -136,9 +136,9 @@ if [ $create_database = 1 ]; then
   echo ""
   echo "Creating new DB service instance ..."
   cf cs mongodb v3.0-container db
-  bind-all-apps.sh db
 fi
 
+bind-all-apps.sh db
 start-all-apps.sh
 cf a
 
