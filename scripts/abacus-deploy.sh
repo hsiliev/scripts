@@ -25,7 +25,7 @@ function mapRoutes {
   echo "Mapping $2 (0-$INSTANCES) instances of $APP_NAME in $APP_DOMAIN domain ..."
   for i in `seq 0 $INSTANCES`;
   do
-    cf map-route "$APP_NAME-$i" $APP_DOMAIN --hostname "$APP_NAME"
+    cf map-route "$APP_NAME-$i" $APP_DOMAIN -n "$APP_NAME"
   done
 }
 
@@ -37,6 +37,7 @@ Deploy Abacus
   -h,-? display this help and exit
   -x    drop database service instance
   -c    copy config
+  -u    uneploy applications
   -s    stage applications
   -d    create service instance
   -m    map app routes
@@ -50,10 +51,11 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 drop_database=0
 create_database=0
 copy_config=0
+undeploy_apps=0
 stage_apps=0
 map_routes=0
 
-while getopts "h?xdcsm" opt; do
+while getopts "h?xdcusm" opt; do
     case "$opt" in
       h|\?)
         show_help
@@ -62,6 +64,8 @@ while getopts "h?xdcsm" opt; do
       x)  drop_database=1
         ;;
       c)  copy_config=1
+        ;;
+      u)  undeploy_apps=1
         ;;
       s)  stage_apps=1
         ;;
@@ -79,6 +83,7 @@ echo "Arguments:"
 echo "  drop_database='$drop_database'"
 echo "  create_database='$create_database'"
 echo "  copy_config='$copy_config'"
+echo "  undeploy_apps='$undeploy_apps'"
 echo "  stage_apps='$stage_apps'"
 echo "  map_routes='$map_routes'"
 echo "  leftovers: $@"
@@ -90,7 +95,8 @@ if [ $copy_config = 1 ]; then
   echo ""
   echo "Rebuilding to apply config changes ..."
   echo ""
-  cd ~/workspace/cf-abacus && npm run rebuild
+  unset DB
+  cd ~/workspace/cf-abacus && (NO_ISTANBUL=true npm run rebuild)
 fi
 
 if [ $drop_database = 1 ]; then
@@ -99,7 +105,7 @@ if [ $drop_database = 1 ]; then
   set -e
 fi
 
-if [ $stage_apps = 1 ]; then
+if [ $undeploy_apps = 1 ]; then
   echo ""
   echo "Delete apps in parallel. We expect errors due to missing routes..."
   set +e
@@ -121,11 +127,8 @@ if [ $drop_database = 1 ]; then
 fi
 
 if [ $stage_apps = 1 ]; then
-  npm run cfstage -- large
+  cd ~/workspace/cf-abacus && npm run cfstage -- large
 fi
-
-cf d -r -f abacus-pouchserver
-cf d -r -f abacus-authserver-plugin
 
 if [ $map_routes = 1 ]; then
   mapRoutes abacus-usage-collector 6
