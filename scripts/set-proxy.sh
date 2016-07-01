@@ -7,7 +7,9 @@ PROXY_PORT=8080
 
 # Proxy Settings
 export http_proxy=http://$PROXY_HOST:$PROXY_PORT
+export HTTP_PROXY=$http_proxy
 export https_proxy=$http_proxy
+export HTTPS_PROXY=$http_proxy
 export no_proxy=localhost,127.0.0.1,192.168.50.4,192.168.99.100,xip.io,.wdf.sap.corp
 launchctl setenv http_proxy $http_proxy
 launchctl setenv https_proxy $https_proxy

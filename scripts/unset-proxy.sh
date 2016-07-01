@@ -5,6 +5,8 @@ echo Removing proxy settings...
 unset http_proxy
 unset https_proxy
 unset no_proxy
+unset HTTP_PROXY
+unset HTTPS_PROXY
 launchctl unsetenv http_proxy
 launchctl unsetenv https_proxy
 launchctl unsetenv no_proxy
