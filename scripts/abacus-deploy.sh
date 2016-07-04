@@ -33,13 +33,13 @@ function show_help {
   cat << EOF
 Usage: ${0##*/} [-hdb]
 
-Deploy Abacus
+Deploy and start Abacus
   -h,-? display this help and exit
   -x    drop database service instance
-  -c    copy config
   -u    uneploy applications
-  -s    stage applications
   -d    create service instance
+  -c    copy config
+  -s    stage applications
   -m    map app routes
 EOF
 }
@@ -83,8 +83,8 @@ echo "Arguments:"
 echo "  drop_database='$drop_database'"
 echo "  create_database='$create_database'"
 echo "  copy_config='$copy_config'"
-echo "  undeploy_apps='$undeploy_apps'"
 echo "  stage_apps='$stage_apps'"
+echo "  undeploy_apps='$undeploy_apps'"
 echo "  map_routes='$map_routes'"
 echo "  leftovers: $@"
 echo ""
@@ -137,9 +137,15 @@ fi
 
 if [ $create_database = 1 ]; then
   echo ""
-  echo "Creating new DB service instance ..."
-  cf cs mongodb v3.0-container db
+  cf cs mongodb-beta v3.0-dedicated-large db
+  db_created=0
+  until cf service db | grep -q 'Status: create succeeded'
+  do
+    sleep 2s
+  done
+  echo "DB created"
 fi
+
 
 bind-all-apps.sh db
 start-all-apps.sh
