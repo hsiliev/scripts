@@ -37,9 +37,10 @@ Deploy and start Abacus
   -h,-? display this help and exit
   -x    drop database service instance
   -u    uneploy applications
-  -d    create service instance
+  -d    create database service instance
   -c    copy config
   -s    stage applications
+  -b    bind database service instance to apps
   -m    map app routes
 EOF
 }
@@ -53,6 +54,7 @@ create_database=0
 copy_config=0
 undeploy_apps=0
 stage_apps=0
+bind_service=0
 map_routes=0
 
 while getopts "h?xdcusm" opt; do
@@ -71,6 +73,8 @@ while getopts "h?xdcusm" opt; do
         ;;
       d)  create_database=1
         ;;
+      b)  bind_service=1
+        ;;
       m)  map_routes=1
         ;;
     esac
@@ -88,16 +92,6 @@ echo "  undeploy_apps='$undeploy_apps'"
 echo "  map_routes='$map_routes'"
 echo "  leftovers: $@"
 echo ""
-
-if [ $copy_config = 1 ]; then
-  echo "Copying config ..."
-  cp -R ~/workspace/abacus-config/* ~/workspace/cf-abacus
-  echo ""
-  echo "Rebuilding to apply config changes ..."
-  echo ""
-  unset DB
-  cd ~/workspace/cf-abacus && (NO_ISTANBUL=true npm run rebuild)
-fi
 
 if [ $drop_database = 1 ]; then
   set +e
@@ -126,6 +120,16 @@ if [ $drop_database = 1 ]; then
   cf ds db -f
 fi
 
+if [ $copy_config = 1 ]; then
+  echo "Copying config ..."
+  cp -R ~/workspace/abacus-config/* ~/workspace/cf-abacus
+  echo ""
+  echo "Rebuilding to apply config changes ..."
+  echo ""
+  unset DB
+  cd ~/workspace/cf-abacus && (NO_ISTANBUL=true npm run rebuild)
+fi
+
 if [ $stage_apps = 1 ]; then
   cd ~/workspace/cf-abacus && npm run cfstage -- large
 fi
@@ -146,8 +150,10 @@ if [ $create_database = 1 ]; then
   echo "DB created"
 fi
 
+if [ $bind_service = 1 ]; then
+  bind-all-apps.sh db
+fi
 
-bind-all-apps.sh db
 start-all-apps.sh
 cf a
 
