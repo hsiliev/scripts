@@ -48,11 +48,12 @@ echo ""
 
 echo "Getting organization $1 ($ORG_GUID) from $DOMAIN ..."
 set +e
-OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .spaces[0].windows[4])
+OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .resources[0].plans[0].aggregated_usage[0])
 if [ "$OUTPUT" == "null" ]; then
   echo ""
   echo "No report data! Getting original response:"
   curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage"
 else
   echo $OUTPUT | jq .
+  echo $OUTPUT | jq . > usage.json
 fi
