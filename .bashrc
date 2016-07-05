@@ -26,6 +26,10 @@ function workto {
   fi
 }
 
+# Go Settings
+export GOPATH=~/workspace/Go
+export GOROOT=/usr/local/go
+
 # aliases
 alias ll="ls -la"
 alias set-proxy="source $HOME/scripts/set-proxy.sh"
@@ -55,8 +59,8 @@ export SCM_CHECK=true
 #
 # cloud_controller_ng
 #
-export DB_CONNECTION_STRING="mysql2://root:password@localhost:3306/cc_test"
-export DB="mysql"
+#export DB_CONNECTION_STRING="mysql2://root:password@localhost:3306/cc_test"
+#export DB="mysql"
 
 #
 # rbenv
@@ -73,6 +77,9 @@ eval "$(direnv hook bash)"
 # go to workspace
 cd $HOME/workspace
 
-
+# nvm
 export NVM_DIR="/home/hsiliev/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+
+# abacus
+export NO_ISTANBUL=true

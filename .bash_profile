@@ -113,8 +113,8 @@ export DOCKER_MACHINE_NAME="dev"
 #
 # cloud_controller_ng
 #
-export DB_CONNECTION_STRING="mysql2://root:password@localhost:3306/cc_test"
-export DB="mysql"
+#export DB_CONNECTION_STRING="mysql2://root:password@localhost:3306/cc_test"
+#export DB="mysql"
 
 # Load Bash It
 source $BASH_IT/bash_it.sh
