@@ -57,7 +57,7 @@ stage_apps=0
 bind_service=0
 map_routes=0
 
-while getopts "h?xdcusm" opt; do
+while getopts "h?xudcsbm" opt; do
     case "$opt" in
       h|\?)
         show_help
@@ -85,10 +85,11 @@ shift $((OPTIND-1))
 
 echo "Arguments:"
 echo "  drop_database='$drop_database'"
-echo "  create_database='$create_database'"
+echo "  undeploy_apps='$undeploy_apps'"
 echo "  copy_config='$copy_config'"
 echo "  stage_apps='$stage_apps'"
-echo "  undeploy_apps='$undeploy_apps'"
+echo "  create_database='$create_database'"
+echo "  bind_service='$bind_service'"
 echo "  map_routes='$map_routes'"
 echo "  leftovers: $@"
 echo ""
@@ -127,7 +128,7 @@ if [ $copy_config = 1 ]; then
   echo "Rebuilding to apply config changes ..."
   echo ""
   unset DB
-  cd ~/workspace/cf-abacus && (NO_ISTANBUL=true npm run rebuild)
+  cd ~/workspace/cf-abacus && NO_ISTANBUL=true npm run rebuild
 fi
 
 if [ $stage_apps = 1 ]; then
