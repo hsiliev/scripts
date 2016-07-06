@@ -21,7 +21,7 @@ fi
 echo "Token obtained"
 echo ""
 
-echo "Getting abacus-usage-reporting URL ..."
+echo "Getting abacus-cf-renewer URL ..."
 RENEWER=$(cf app abacus-cf-renewer | awk '{if (NR == 7) {print $2}}')
 if [ -z "$RENEWER" ]; then
   echo "No bridge deployed !!!"

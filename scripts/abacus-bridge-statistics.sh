@@ -21,7 +21,7 @@ fi
 echo "Token obtained"
 echo ""
 
-echo "Getting abacus-usage-reporting URL ..."
+echo "Getting abacus-cf-bridge URL ..."
 BRIDGE=$(cf app abacus-cf-bridge | awk '{if (NR == 7) {print $2}}')
 if [ -z "$BRIDGE" ]; then
   echo "No bridge deployed !!!"
