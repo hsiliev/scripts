@@ -142,7 +142,7 @@ fi
 
 if [ $create_database = 1 ]; then
   echo ""
-  cf cs mongodb-beta v3.0-dedicated-large db
+  cf cs mongodb v3.0-dedicated-large db
   db_created=0
   until cf service db | grep -q 'Status: create succeeded'
   do

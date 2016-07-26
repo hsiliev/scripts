@@ -55,5 +55,4 @@ if [ "$OUTPUT" == "null" ]; then
   curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage"
 else
   echo $OUTPUT | jq .
-  echo $OUTPUT | jq . > usage.json
 fi
