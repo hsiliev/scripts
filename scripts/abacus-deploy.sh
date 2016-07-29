@@ -18,7 +18,7 @@ function mapRoutes {
   local APP_DOMAIN=${APP_URL/$APP_NAME-0./}
 
   if [ -z "$APP_DOMAIN" ]; then
-    echo "Unknown domain !"
+    echo "Unknown domain for $APP_NAME!"
     exit 1
   fi
 
@@ -119,11 +119,21 @@ if [ $drop_database = 1 ]; then
   echo ""
   sleep 5s
   cf ds db -f
+  echo "Waiting for db service instance deletion ..."
+  until cf service db | grep -q "Service instance db not found\|Status: create failed"
+  do
+    sleep 2s
+  done
+  echo "Done."
 fi
 
 if [ $copy_config = 1 ]; then
   echo "Copying config ..."
-  cp -R ~/workspace/abacus-config/* ~/workspace/cf-abacus
+  pushd ~/workspace/hsiliev/hcp-landscapes/abacus-config
+    echo "Abacus config branch in ~/workspace/hsiliev/hcp-landscapes/abacus-config:"
+    git branch
+  popd
+  cp -R ~/workspace/hsiliev/hcp-landscapes/abacus-config/* ~/workspace/cf-abacus
   echo ""
   echo "Rebuilding to apply config changes ..."
   echo ""
@@ -132,7 +142,7 @@ if [ $copy_config = 1 ]; then
 fi
 
 if [ $stage_apps = 1 ]; then
-  cd ~/workspace/cf-abacus && npm run cfstage -- large
+  cd ~/workspace/cf-abacus && npm run cfstage
 fi
 
 if [ $map_routes = 1 ]; then
