@@ -144,6 +144,8 @@ export ABACUS_HOME=/Users/development/workspace/cf-abacus
 export NO_ISTANBUL=true
 
 # abacus ops
+export ABACUS_CF_BRIDGE_CLIENT_ID=abacus-cf-bridge
+export ABACUS_CF_BRIDGE_CLIENT_SECRET=secret
 export ABACUS_CLIENT_ID=abacus
 export ABACUS_CLIENT_SECRET=secret
 export CLIENT_ID=abacus-linux-container
