@@ -36,12 +36,12 @@ set -e
 echo "Done."
 echo ""
 
-echo "Getting abacus-usage-reporting domain ..."
-APP_URL=$(cf app abacus-usage-reporting-0 | awk '{if (NR == 7) {print $3}}')
-if [[ $APP_URL == *"abacus-usage-reporting-0"* ]]; then
-  DOMAIN=${APP_URL/abacus-usage-reporting-0./}
+echo "Getting abacus-cf-bridge domain ..."
+APP_URL=$(cf app abacus-cf-bridge | awk '{if (NR == 7) {print $2}}')
+if [[ $APP_URL == *"abacus-cf-bridge"* ]]; then
+  DOMAIN=${APP_URL/abacus-cf-bridge./}
 else
-  DOMAIN=${APP_URL/abacus-usage-reporting./}
+  DOMAIN=${APP_URL/abacus-cf-bridge./}
 fi
 echo "Using domain $DOMAIN"
 echo ""
