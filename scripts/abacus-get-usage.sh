@@ -29,7 +29,7 @@ echo "Get organization $1 guid ..."
 set +e
 ORG_GUID=$(cf org $1 --guid)
 if [ $? != 0 ]; then
-  echo "Organization $1 not found. Assuming this is org GUID ..."
+  echo "Organization $1 not found. Assuming $1 is an org GUID ..."
   ORG_GUID=$1
 fi
 set -e
@@ -44,7 +44,7 @@ echo ""
 echo "Getting organization $1 ($ORG_GUID) from $DOMAIN ..."
 set +e
 OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .resources[0].plans[0].aggregated_usage[0])
-if [ "$OUTPUT" == "null" ]; then
+if [ "$OUTPUT" == "null" -o -z "$OUTPUT" ]; then
   echo ""
   echo "No report data! Getting original response:"
   curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage"
