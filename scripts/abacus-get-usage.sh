@@ -37,12 +37,7 @@ echo "Done."
 echo ""
 
 echo "Getting abacus-cf-bridge domain ..."
-APP_URL=$(cf app abacus-cf-bridge | awk '{if (NR == 7) {print $2}}')
-if [[ $APP_URL == *"abacus-cf-bridge"* ]]; then
-  DOMAIN=${APP_URL/abacus-cf-bridge./}
-else
-  DOMAIN=${APP_URL/abacus-cf-bridge./}
-fi
+DOMAIN=$(cf domains | awk '{if (NR == 3) {print $1}}')
 echo "Using domain $DOMAIN"
 echo ""
 
