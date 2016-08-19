@@ -24,7 +24,7 @@ echo ""
 echo "Getting abacus-cf-bridge URL ..."
 BRIDGE=$(cf app abacus-cf-bridge | awk '{if (NR == 7) {print $2}}')
 if [ -z "$BRIDGE" ]; then
-  echo "No bridge deployed !!!"
+  echo "No bridge deployed! Have you targeted abacus org/space?"
   exit 1
 fi
 echo "Using $BRIDGE"
