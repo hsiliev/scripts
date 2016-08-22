@@ -1,6 +1,37 @@
 #!/bin/bash
 set -e
 
+function show_help {
+  cat << EOF
+Usage: ${0##*/} [-ha] <organization name>
+
+Get org usage
+  -h,-? display this help and exit
+  -a    display the whole report
+EOF
+}
+
+# A POSIX variable
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+# Initialize our own variables
+show_all=0
+
+while getopts "h?a" opt; do
+    case "$opt" in
+      h|\?)
+        show_help
+        exit 0
+        ;;
+      a)  show_all=1
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+[ "$1" = "--" ] && shift
+
+
 if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
   echo "Missing CLIENT_ID or CLIENT_SECRET !"
   exit 1
@@ -43,7 +74,11 @@ echo ""
 
 echo "Getting organization $1 ($ORG_GUID) from $DOMAIN ..."
 set +e
-OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .resources[0].plans[0].aggregated_usage[0])
+if [ $show_all == 1 ]; then
+  OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .)
+else
+  OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .resources[0].plans[0].aggregated_usage[0])
+fi
 if [ "$OUTPUT" == "null" -o -z "$OUTPUT" ]; then
   echo ""
   echo "No report data! Getting original response:"
