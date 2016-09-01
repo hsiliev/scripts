@@ -22,22 +22,23 @@ echo "Token obtained"
 echo ""
 
 echo "Getting abacus-cf-renewer URL ..."
-RENEWER=$(cf app abacus-cf-renewer | awk '{if (NR == 7) {print $2}}')
-if [ -z "$RENEWER" ]; then
-  echo "No bridge deployed !!!"
+URL=$(cf app abacus-cf-renewer | awk '{if (NR == 7) {print $2}}')
+if [ -z "$URL" ]; then
+  echo "Cannot find URL! Have you targeted abacus org/space?"
   exit 1
 fi
-echo "Using $RENEWER"
+URL="https://$URL/v1/cf/renewer"
+echo "Using $URL"
 echo ""
 
 echo "Getting statistics ..."
 set +e
-OUTPUT=$(curl -sH "Authorization: bearer $TOKEN" "https://$RENEWER/v1/cf/renewer" | jq 'del(.renewer.performance)')
+OUTPUT=$(curl -sH "Authorization: bearer $TOKEN" $URL | jq 'del(.renewer.performance)')
 set -e
 if [ "$OUTPUT" == *"parse error"* ] || [ "$OUTPUT" == *"jq: error"* ] || [ -z "$OUTPUT" ]; then
   echo ""
   echo "Dumping raw response ..."
-  curl -i -H "Authorization: bearer $TOKEN" "https://$BRIDGE/v1/cf/bridge"
+  curl -i -H "Authorization: bearer $TOKEN" $URL
 else
   echo $OUTPUT | jq .
 fi

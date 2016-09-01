@@ -34,14 +34,15 @@ function show_help {
 Usage: ${0##*/} [-hdb]
 
 Deploy and start Abacus
-  -h,-? display this help and exit
-  -x    drop database service instance
-  -u    uneploy applications
-  -d    create database service instance
-  -c    copy config
-  -s    stage applications
-  -b    bind database service instance to apps
-  -m    map app routes
+  -h,-?          display this help and exit
+  -x             drop database service instance
+  -u             undeploy applications
+  -d             create database service instance
+  -c             copy config
+  -s             stage applications
+  -b             bind database service instance to apps
+  -m             map app routes
+  -p <profile>   profile
 EOF
 }
 
@@ -56,8 +57,9 @@ undeploy_apps=0
 stage_apps=0
 bind_service=0
 map_routes=0
+profile="default"
 
-while getopts "h?xudcsbm" opt; do
+while getopts "h?xudcsbmp:" opt; do
     case "$opt" in
       h|\?)
         show_help
@@ -77,6 +79,8 @@ while getopts "h?xudcsbm" opt; do
         ;;
       m)  map_routes=1
         ;;
+      p)  profile="$OPTARG"
+        ;;
     esac
 done
 
@@ -91,6 +95,7 @@ echo "  stage_apps='$stage_apps'"
 echo "  create_database='$create_database'"
 echo "  bind_service='$bind_service'"
 echo "  map_routes='$map_routes'"
+echo "  profile='$profile'"
 echo "  leftovers: $@"
 echo ""
 
@@ -129,11 +134,11 @@ fi
 
 if [ $copy_config = 1 ]; then
   echo "Copying config ..."
-  pushd ~/workspace/hsiliev/hcp-landscapes/abacus-config
-    echo "Abacus config branch in ~/workspace/hsiliev/hcp-landscapes/abacus-config:"
+  pushd ~/workspace/abacus-config
+    echo "Abacus config branch in ~/workspace/abacus-config:"
     git branch
   popd
-  cp -R ~/workspace/hsiliev/hcp-landscapes/abacus-config/* ~/workspace/cf-abacus
+  cp -R ~/workspace/abacus-config/* ~/workspace/cf-abacus
   echo ""
   echo "Rebuilding to apply config changes ..."
   echo ""
@@ -142,7 +147,7 @@ if [ $copy_config = 1 ]; then
 fi
 
 if [ $stage_apps = 1 ]; then
-  cd ~/workspace/cf-abacus && npm run cfstage
+  cd ~/workspace/cf-abacus && npm run cfstage -- $profile
 fi
 
 if [ $map_routes = 1 ]; then

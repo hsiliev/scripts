@@ -60,29 +60,39 @@ echo "Get organization $1 guid ..."
 set +e
 ORG_GUID=$(cf org $1 --guid)
 if [ $? != 0 ]; then
-  echo "Organization $1 not found. Assuming $1 is an org GUID ..."
-  ORG_GUID=$1
+  echo "Organization $1 not found !"
+  exit 1
 fi
 set -e
 echo "Done."
 echo ""
 
-echo "Getting abacus-cf-bridge domain ..."
+echo "Getting current domain ..."
 DOMAIN=$(cf domains | awk '{if (NR == 3) {print $1}}')
 echo "Using domain $DOMAIN"
 echo ""
 
-echo "Getting organization $1 ($ORG_GUID) from $DOMAIN ..."
+echo "Getting abacus-usage-reporting URL ..."
+URL=$(cf app abacus-usage-reporting | awk '{if (NR == 7) {print $2}}')
+if [ -z "$URL" ]; then
+  echo "Cannot find URL! Have you targeted abacus org/space?"
+  exit 1
+fi
+URL="https://$URL/v1/metering/organizations/${ORG_GUID}/aggregated/usage"
+echo "Using $URL"
+echo ""
+
+echo "Getting report for org $1 ($ORG_GUID) from $URL ..."
 set +e
 if [ $show_all == 1 ]; then
-  OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .)
+  OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL | jq .)
 else
-  OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage" | jq .resources[0].plans[0].aggregated_usage[0])
+  OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL | jq .resources[0].plans[0].aggregated_usage[0])
 fi
 if [ "$OUTPUT" == "null" -o -z "$OUTPUT" ]; then
   echo ""
   echo "No report data! Getting original response:"
-  curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage"
+  curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL
 else
   echo $OUTPUT | jq .
 fi

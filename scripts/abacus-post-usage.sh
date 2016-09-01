@@ -43,10 +43,20 @@ DOMAIN=$(cf domains | awk '{if (NR == 3) {print $1}}')
 echo "Using domain $DOMAIN"
 echo ""
 
+echo "Getting abacus-usage-collector URL ..."
+URL=$(cf app abacus-usage-collector | awk '{if (NR == 7) {print $2}}')
+if [ -z "$URL" ]; then
+  echo "Cannot find URL! Have you targeted abacus org/space?"
+  exit 1
+fi
+URL="https://$URL/v1/metering/collected/usage"
+echo "Using $URL"
+echo ""
+
 DATE_IN_MS=$(date +%s000)
 BODY="{\"start\":$DATE_IN_MS,\"end\":$DATE_IN_MS,\"organization_id\":\"$ORG_GUID\",\"space_id\":\"$SPACE_GUID\",\"resource_id\":\"linux-container\",\"plan_id\":\"basic\",\"consumer_id\":\"app:1fb61c1f-2db3-4235-9934-00097845b80d\",\"resource_instance_id\":\"1fb61c1f-2db3-4235-9934-00097845b80d\",\"measured_usage\":[{\"measure\":\"current_instance_memory\",\"quantity\":512},{\"measure\":\"current_running_instances\",\"quantity\":1},{\"measure\":\"previous_instance_memory\",\"quantity\":0},{\"measure\":\"previous_running_instances\",\"quantity\":0}]}"
 echo "Will submit usage $(echo $BODY | jq .)"
 echo ""
 
-curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" -X POST -d $BODY "https://abacus-usage-collector.$DOMAIN/v1/metering/collected/usage"
+curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" -X POST -d $BODY $URL
 echo "Usage POSTed"

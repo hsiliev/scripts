@@ -22,22 +22,23 @@ echo "Token obtained"
 echo ""
 
 echo "Getting abacus-cf-bridge URL ..."
-BRIDGE=$(cf app abacus-cf-bridge | awk '{if (NR == 7) {print $2}}')
-if [ -z "$BRIDGE" ]; then
-  echo "No bridge deployed! Have you targeted abacus org/space?"
+URL=$(cf app abacus-cf-bridge | awk '{if (NR == 7) {print $2}}')
+if [ -z "$URL" ]; then
+  echo "Cannot find URL! Have you targeted abacus org/space?"
   exit 1
 fi
-echo "Using $BRIDGE"
+URL="https://$URL/v1/cf/bridge"
+echo "Using $URL"
 echo ""
 
 echo "Getting statistics ..."
 set +e
-OUTPUT=$(curl -sH "Authorization: bearer $TOKEN" "https://$BRIDGE/v1/cf/bridge" | jq 'del(.bridge.performance)')
+OUTPUT=$(curl -sH "Authorization: bearer $TOKEN" $URL | jq 'del(.bridge.performance)')
 set -e
 if [ "$OUTPUT" == *"parse error"* ] || [ "$OUTPUT" == *"jq: error"* ] || [ -z "$OUTPUT" ]; then
   echo ""
   echo "Dumping raw response ..."
-  curl -i -H "Authorization: bearer $TOKEN" "https://$BRIDGE/v1/cf/bridge"
+  curl -i -H "Authorization: bearer $TOKEN" $URL
 else
   echo $OUTPUT | jq .
 fi
