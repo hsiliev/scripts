@@ -15,7 +15,7 @@ echo ""
 echo "Getting token for $CLIENT_ID from $AUTH_SERVER ..."
 TOKEN=$(curl --user $CLIENT_ID:$CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials" | jq -r .access_token)
 if [ "$TOKEN" == "null" ]; then
-  echo "No token found !"
+  echo "No token found ! Are your credentials correct (ABACUS_CLIENT_ID and ABACUS_CLIENT_SECRET)?"
   exit 1
 fi
 echo "Token obtained"
