@@ -31,7 +31,7 @@ function mapRoutes {
 
 function show_help {
   cat << EOF
-Usage: ${0##*/} [-hdb]
+Usage: ${0##*/} [-hxudcsbm] [-p <profile>]
 
 Deploy and start Abacus
   -h,-?          display this help and exit
