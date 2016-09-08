@@ -13,19 +13,29 @@ function mapRoutes {
   fi
 
   local APP_NAME=$1
+  local FIRST_APP_NAME="$APP_NAME-0"
+  local HOST_NAME=$APP_NAME
+  if [ -n "$SUFFIX" ]; then
+    FIRST_APP_NAME="$FIRST_APP_NAME-$SUFFIX"
+    HOST_NAME="$HOST_NAME-$SUFFIX"
+  fi
   local INSTANCES=$(expr $2 - 1)
-  local APP_URL=$(cf app $APP_NAME-0 | awk '{if (NR == 7) {print $2}}')
-  local APP_DOMAIN=${APP_URL/$APP_NAME-0./}
+  local APP_URL=$(cf app $FIRST_APP_NAME | awk '{if (NR == 7) {print $2}}')
+  local APP_DOMAIN=${APP_URL/$FIRST_APP_NAME./}
 
   if [ -z "$APP_DOMAIN" ]; then
-    echo "Unknown domain for $APP_NAME!"
+    echo "Unknown domain for $FIRST_APP_NAME!"
     exit 1
   fi
 
   echo "Mapping $2 (0-$INSTANCES) instances of $APP_NAME in $APP_DOMAIN domain ..."
   for i in `seq 0 $INSTANCES`;
   do
-    cf map-route "$APP_NAME-$i" $APP_DOMAIN -n "$APP_NAME"
+    local FULL_APP_NAME=$APP_NAME-$i
+    if [ -n "$SUFFIX" ]; then
+      FULL_APP_NAME="$FULL_APP_NAME-$SUFFIX"
+    fi
+    cf map-route $FULL_APP_NAME $APP_DOMAIN -n $HOST_NAME
   done
 }
 

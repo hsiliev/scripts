@@ -48,7 +48,7 @@ echo "Using API URL $API"
 echo ""
 
 echo "Getting token for $CLIENT_ID from $AUTH_SERVER ..."
-TOKEN=$(curl --user $CLIENT_ID:$CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=abacus.usage.linux-container.write%20abacus.usage.linux-container.read" | jq -r .access_token)
+TOKEN=$(curl -k --user $CLIENT_ID:$CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=abacus.usage.linux-container.write%20abacus.usage.linux-container.read" | jq -r .access_token)
 if [ "$TOKEN" == "null" ]; then
   echo "No token found ! Are your credentials correct (CLIENT_ID and CLIENT_SECRET)?"
   exit 1
@@ -85,14 +85,14 @@ echo ""
 echo "Getting report for org $1 ($ORG_GUID) from $URL ..."
 set +e
 if [ $show_all == 1 ]; then
-  OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL | jq .)
+  OUTPUT=$(curl -k -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL | jq .)
 else
-  OUTPUT=$(curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL | jq .resources[0].plans[0].aggregated_usage[0])
+  OUTPUT=$(curl -k -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL | jq .resources[0].plans[0].aggregated_usage[0])
 fi
 if [ "$OUTPUT" == "null" -o -z "$OUTPUT" ]; then
   echo ""
   echo "No report data! Getting original response:"
-  curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL
+  curl -k -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL
 else
   echo $OUTPUT | jq .
 fi
