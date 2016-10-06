@@ -44,12 +44,7 @@ echo "Using domain $DOMAIN"
 echo ""
 
 echo "Getting abacus-usage-collector URL ..."
-URL=$(cf app abacus-usage-collector | awk '{if (NR == 7) {print $2}}')
-if [ -z "$URL" ]; then
-  echo "Cannot find URL! Have you targeted abacus org/space?"
-  exit 1
-fi
-URL="https://$URL/v1/metering/collected/usage"
+URL="https://abacus-usage-collector.$DOMAIN/v1/metering/collected/usage"
 echo "Using $URL"
 echo ""
 
