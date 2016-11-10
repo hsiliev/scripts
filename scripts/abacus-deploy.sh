@@ -41,18 +41,19 @@ function mapRoutes {
 
 function show_help {
   cat << EOF
-Usage: ${0##*/} [-hxudcsbm] [-p <profile>]
+Usage: ${0##*/} [-hxudsbm] [-a <abacus_dir>] [-c <config_dir>] [-p <profile>]
 
-Deploy and start Abacus
-  -h,-?          display this help and exit
-  -x             drop database service instance
-  -u             undeploy applications
-  -d             create database service instance
-  -c             copy config
-  -s             stage applications
-  -b             bind database service instance to apps
-  -m             map app routes
-  -p <profile>   profile
+Deploy and start Abacus instance
+  -h,-?           display this help and exit
+  -x              drop database service instance
+  -u              undeploy applications
+  -d              create database service instance
+  -s              stage applications
+  -b              bind database service instance to apps
+  -m              map app routes
+  -a <abacus_dir> abacus directory
+  -c <config_dir> config directory
+  -p <profile>    profile
 EOF
 }
 
@@ -62,22 +63,19 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 # Initialize our own variables
 drop_database=0
 create_database=0
-copy_config=0
 undeploy_apps=0
 stage_apps=0
 bind_service=0
 map_routes=0
 profile="default"
 
-while getopts "h?xudcsbmp:" opt; do
+while getopts "h?xudsbma:c:p:" opt; do
     case "$opt" in
       h|\?)
         show_help
         exit 0
         ;;
       x)  drop_database=1
-        ;;
-      c)  copy_config=1
         ;;
       u)  undeploy_apps=1
         ;;
@@ -89,6 +87,10 @@ while getopts "h?xudcsbmp:" opt; do
         ;;
       m)  map_routes=1
         ;;
+      a)  abacus_dir="$OPTARG"
+        ;;
+      c)  config_dir="$OPTARG"
+        ;;
       p)  profile="$OPTARG"
         ;;
     esac
@@ -97,14 +99,19 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
+if [ -z $abacus_dir ]; then
+  abacus_dir=~/workspace/cf-abacus
+fi
+
 echo "Arguments:"
 echo "  drop_database='$drop_database'"
 echo "  undeploy_apps='$undeploy_apps'"
-echo "  copy_config='$copy_config'"
 echo "  stage_apps='$stage_apps'"
 echo "  create_database='$create_database'"
 echo "  bind_service='$bind_service'"
 echo "  map_routes='$map_routes'"
+echo "  abacus_dir='$abacus_dir'"
+echo "  config_dir='$config_dir'"
 echo "  profile='$profile'"
 echo "  leftovers: $@"
 echo ""
@@ -142,22 +149,22 @@ if [ $drop_database = 1 ]; then
   echo "Done."
 fi
 
-if [ $copy_config = 1 ]; then
-  echo "Copying config ..."
-  pushd ~/workspace/abacus-config
-    echo "Abacus config branch in ~/workspace/abacus-config:"
+if [ -n $config_dir ]; then
+  echo "Copying config from $config_dir ..."
+  pushd $config_dir
+    echo "Abacus config branch in $config_dir:"
     git branch
   popd
-  cp -R ~/workspace/abacus-config/* ~/workspace/cf-abacus
+  cp -R $config_dir/* $abacus_dir
   echo ""
   echo "Rebuilding to apply config changes ..."
   echo ""
   unset DB
-  cd ~/workspace/cf-abacus && NO_ISTANBUL=true npm run rebuild
+  cd $abacus_dir && NO_ISTANBUL=true npm run rebuild
 fi
 
 if [ $stage_apps = 1 ]; then
-  cd ~/workspace/cf-abacus && npm run cfstage -- $profile
+  cd $abacus_dir && npm run cfstage -- $profile
 fi
 
 if [ $map_routes = 1 ]; then
