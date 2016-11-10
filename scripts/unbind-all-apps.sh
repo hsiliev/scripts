@@ -9,4 +9,4 @@ fi
 
 SERVICE=$1
 
-cf apps | tail -n +5 | awk '{print $1}' | xargs -n 1 -P 20 ~/scripts/unbind-app.sh $SERVICE
+cf apps | tail -n +5 | awk '{print $1}' | xargs -n 1 -P 20 unbind-app.sh $SERVICE
