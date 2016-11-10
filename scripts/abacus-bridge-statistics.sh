@@ -31,6 +31,7 @@ if [ -z "$URL" ]; then
   echo "Cannot find URL! Have you targeted abacus org/space?"
   exit 1
 fi
+URL="https://$URL/v1/cf/bridge"
 echo "Using $URL"
 echo ""
 

@@ -72,7 +72,11 @@ DOMAIN=$(cf domains | awk '{if (NR == 3) {print $1}}')
 echo "Using domain $DOMAIN"
 echo ""
 
-URL="https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage"
+if [ -z "$SUFFIX" ]; then
+  URL="https://abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage"
+else
+  URL="https://abacus-usage-reporting-$SUFFIX.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage"
+fi
 echo "Using $URL"
 echo ""
 

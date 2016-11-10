@@ -22,7 +22,11 @@ echo "Token obtained"
 echo ""
 
 echo "Getting abacus-cf-renewer URL ..."
-URL=$(cf app abacus-cf-renewer | awk '{if (NR == 7) {print $2}}')
+if [ -z "$SUFFIX" ]; then
+  URL=$(cf app abacus-cf-renewer | awk '{if (NR == 7) {print $2}}')
+else
+  URL=$(cf app abacus-cf-renewer-$SUFFIX | awk '{if (NR == 7) {print $2}}')
+fi
 if [ -z "$URL" ]; then
   echo "Cannot find URL! Have you targeted abacus org/space?"
   exit 1
