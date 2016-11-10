@@ -150,7 +150,7 @@ if [ $drop_database = 1 ]; then
 fi
 
 if [ -n $config_dir ]; then
-  echo "Copying config from $config_dir ..."
+  echo "Copying config from $config_dir to $abacus_dir ..."
   pushd $config_dir
     echo "Abacus config branch in $config_dir:"
     git branch

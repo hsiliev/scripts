@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
+if [ -z "$ABACUS_CLIENT_ID" ] || [ -z "$ABACUS_CLIENT_SECRET" ]; then
   echo "Missing ABACUS_CLIENT_ID or ABACUS_CLIENT_SECRET !"
   exit 1
 fi
@@ -22,12 +22,15 @@ echo "Token obtained"
 echo ""
 
 echo "Getting abacus-cf-bridge URL ..."
-URL=$(cf app abacus-cf-bridge | awk '{if (NR == 7) {print $2}}')
+if [ -z "$SUFFIX" ]; then
+  URL=$(cf app abacus-cf-bridge | awk '{if (NR == 7) {print $2}}')
+else
+  URL=$(cf app abacus-cf-bridge-$SUFFIX | awk '{if (NR == 7) {print $2}}')
+fi
 if [ -z "$URL" ]; then
   echo "Cannot find URL! Have you targeted abacus org/space?"
   exit 1
 fi
-URL="https://$URL/v1/cf/bridge"
 echo "Using $URL"
 echo ""
 
