@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-if [ -z "$ABACUS_CLIENT_ID" ] || [ -z "$ABACUS_CLIENT_SECRET" ]; then
-  echo "Missing ABACUS_CLIENT_ID or ABACUS_CLIENT_SECRET !"
+if [ -z "$SYSTEM_CLIENT_ID" ] || [ -z "$SYSTEM_CLIENT_SECRET" ]; then
+  echo "Missing SYSTEM_CLIENT_ID or SYSTEM_CLIENT_SECRET !"
   exit 1
 fi
 
@@ -12,10 +12,10 @@ AUTH_SERVER=${API/api./uaa.}
 echo "Using API URL $API"
 echo ""
 
-echo "Getting token for $ABACUS_CLIENT_ID from $AUTH_SERVER ..."
-TOKEN=$(curl --user $ABACUS_CLIENT_ID:$ABACUS_CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials" | jq -r .access_token)
+echo "Getting token for $SYSTEM_CLIENT_ID from $AUTH_SERVER ..."
+TOKEN=$(curl --user $SYSTEM_CLIENT_ID:$SYSTEM_CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials" | jq -r .access_token)
 if [ "$TOKEN" == "null" ]; then
-  echo "No token found ! Are your credentials correct (ABACUS_CLIENT_ID and ABACUS_CLIENT_SECRET)?"
+  echo "No token found ! Are your credentials correct (SYSTEM_CLIENT_ID and SYSTEM_CLIENT_SECRET)?"
   exit 1
 fi
 echo "Token obtained"
