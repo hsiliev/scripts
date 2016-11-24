@@ -22,11 +22,8 @@ echo "Token obtained"
 echo ""
 
 echo "Getting abacus-cf-bridge URL ..."
-if [ -z "$SUFFIX" ]; then
-  URL=$(cf app abacus-cf-bridge | awk '{if (NR == 7) {print $2}}')
-else
-  URL=$(cf app abacus-cf-bridge-$SUFFIX | awk '{if (NR == 7) {print $2}}')
-fi
+URL=$(cf app ${ABACUS_PREFIX}abacus-cf-bridge | awk '{if (NR == 7) {print $2}}')
+
 if [ -z "$URL" ]; then
   echo "Cannot find URL! Have you targeted abacus org/space?"
   exit 1
