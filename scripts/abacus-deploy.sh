@@ -15,9 +15,9 @@ function mapRoutes {
   local APP_NAME=$1
   local FIRST_APP_NAME="$APP_NAME-0"
   local HOST_NAME=$APP_NAME
-  if [ -n "$SUFFIX" ]; then
-    FIRST_APP_NAME="$FIRST_APP_NAME-$SUFFIX"
-    HOST_NAME="$HOST_NAME-$SUFFIX"
+  if [ -n "$ABACUS_PREFIX" ]; then
+    FIRST_APP_NAME="${ABACUS_PREFIX}${FIRST_APP_NAME}"
+    HOST_NAME="${ABACUS_PREFIX}${HOST_NAME}"
   fi
   local INSTANCES=$(expr $2 - 1)
   local APP_URL=$(cf app $FIRST_APP_NAME | awk '{if (NR == 7) {print $2}}')
@@ -32,8 +32,8 @@ function mapRoutes {
   for i in `seq 0 $INSTANCES`;
   do
     local FULL_APP_NAME=$APP_NAME-$i
-    if [ -n "$SUFFIX" ]; then
-      FULL_APP_NAME="$FULL_APP_NAME-$SUFFIX"
+    if [ -n "$ABACUS_PREFIX" ]; then
+      FULL_APP_NAME="${ABACUS_PREFIX}${FULL_APP_NAME}"
     fi
     cf map-route $FULL_APP_NAME $APP_DOMAIN -n $HOST_NAME
   done

@@ -44,11 +44,8 @@ echo "Using domain $DOMAIN"
 echo ""
 
 echo "Getting abacus-usage-collector URL ..."
-if [ -z "$SUFFIX" ]; then
-  URL="https://abacus-usage-collector.$DOMAIN/v1/metering/collected/usage"
-else
-  URL="https://abacus-usage-collector-$SUFFIX.$DOMAIN/v1/metering/collected/usage"
-fi
+URL="https://${ABACUS_PREFIX}abacus-usage-collector.$DOMAIN/v1/metering/collected/usage"
+
 echo "Using $URL"
 echo ""
 
