@@ -1,6 +1,6 @@
 #/bin/bash -e
 counter=0
-while $*; do
+while time $*; do
   (( counter++ ))
   echo "Executed $counter times"
 done

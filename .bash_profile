@@ -149,8 +149,8 @@ export NO_ISTANBUL=true
 # abacus ops
 export ABACUS_CF_BRIDGE_CLIENT_ID=abacus-cf-bridge
 export ABACUS_CF_BRIDGE_CLIENT_SECRET=secret
-export ABACUS_CLIENT_ID=abacus
-export ABACUS_CLIENT_SECRET=secret
+export SYSTEM_CLIENT_ID=abacus
+export SYSTEM_CLIENT_SECRET=secret
 export CLIENT_ID=abacus-linux-container
 export CLIENT_SECRET=secret
 
@@ -167,6 +167,11 @@ function abacus-module {
     fi
   done
 }
+
+# concourse jumpbox
+export concourse_ip=127.0.0.1
+export concourse_port=8888
+export concourse_platform=${OSTYPE//[0-9.]/}
 
 # iTerm shell integration
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
