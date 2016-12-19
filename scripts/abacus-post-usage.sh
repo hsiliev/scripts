@@ -42,6 +42,10 @@ echo "Getting first CF domain ..."
 DOMAIN=$(cf domains | awk '{if (NR == 3) {print $1}}')
 echo "Using domain $DOMAIN"
 echo ""
+if [ -z "$DOMAIN" ]; then
+  echo "No domain found ! Are your logged in CF?"
+  exit 1
+fi
 
 echo "Getting abacus-usage-collector URL ..."
 URL="https://${ABACUS_PREFIX}abacus-usage-collector.$DOMAIN/v1/metering/collected/usage"
