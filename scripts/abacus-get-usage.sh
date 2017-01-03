@@ -42,14 +42,14 @@ if [ -z "$1" ]; then
 fi
 
 echo "Obtaining API endpoint URL ..."
-API=$(cf api | awk '{print $3}')
+API=$(cf api | awk '{if (NR == 1) {print $3}}')
 AUTH_SERVER=${API/api./uaa.}
 echo "Using API URL $API"
 echo ""
 
 echo "Getting token for $CLIENT_ID from $AUTH_SERVER ..."
 TOKEN=$(curl -k --user $CLIENT_ID:$CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=abacus.usage.linux-container.write%20abacus.usage.linux-container.read" | jq -r .access_token)
-if [ "$TOKEN" == "null" ]; then
+if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
   echo "No token found ! Are your credentials correct (CLIENT_ID and CLIENT_SECRET)?"
   exit 1
 fi

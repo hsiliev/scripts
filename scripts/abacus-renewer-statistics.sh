@@ -7,14 +7,14 @@ if [ -z "$SYSTEM_CLIENT_ID" ] || [ -z "$SYSTEM_CLIENT_SECRET" ]; then
 fi
 
 echo "Obtaining API endpoint URL ..."
-API=$(cf api | awk '{print $3}')
+API=$(cf api | awk '{if (NR == 1) {print $3}}')
 AUTH_SERVER=${API/api./uaa.}
 echo "Using API URL $API"
 echo ""
 
 echo "Getting token for $SYSTEM_CLIENT_ID from $AUTH_SERVER ..."
 TOKEN=$(curl --user $SYSTEM_CLIENT_ID:$SYSTEM_CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials" | jq -r .access_token)
-if [ "$TOKEN" == "null" ]; then
+if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
   echo "No token found ! Are your credentials correct (SYSTEM_CLIENT_ID and SYSTEM_CLIENT_SECRET)?"
   exit 1
 fi

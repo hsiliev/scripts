@@ -48,14 +48,14 @@ echo "Arguments: show_all='$show_all', filter_org='$filter_org', page='$page', L
 echo ""
 
 echo "Obtaining API endpoint URL ..."
-API=$(cf api | awk '{print $3}')
+API=$(cf api | awk '{if (NR == 1) {print $3}}')
 AUTH_SERVER=${API/api./uaa.}
 echo "Using API URL $API"
 echo ""
 
 echo "Getting token for $ABACUS_CF_BRIDGE_CLIENT_ID from $AUTH_SERVER ..."
 TOKEN=$(curl --user "$ABACUS_CF_BRIDGE_CLIENT_ID:$ABACUS_CF_BRIDGE_CLIENT_SECRET" -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials" | jq -r .access_token)
-if [ -z "$TOKEN" ]; then
+if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
   echo "No token found !"
   exit 1
 fi
