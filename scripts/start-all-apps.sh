@@ -11,5 +11,7 @@ if [[ ! -d "$SCRIPT_DIR" ]]; then
   SCRIPT_DIR="$PWD";
 fi
 
-echo "Using $PARALLEL_JOBS parallel jobs ..."
+echo "Using $PARALLEL_JOBS parallel jobs."
+
+echo "Listing applications ..."
 cf apps | tail -n +5 | awk '{print $1}' | xargs -P $PARALLEL_JOBS -n 1 $SCRIPT_DIR/start-app.sh

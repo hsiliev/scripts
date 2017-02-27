@@ -7,4 +7,4 @@ if [[ ! -d "$SCRIPT_DIR" ]]; then
 fi
 
 echo "Listing applications ..."
-cf apps | tail -n +5 | awk '{print $1}' | xargs -n 1 $SCRIPT_DIR/restart-app.sh
+cf apps | tail -n +5 | awk '{print $1}' | xargs -P 20 -n 1 $SCRIPT_DIR/healthcheck-app.sh $1
