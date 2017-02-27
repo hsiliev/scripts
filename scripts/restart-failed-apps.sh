@@ -1,5 +1,10 @@
 #!/bin/bash
 set -e
 
-cf apps | tail -n +5 | grep ? | awk '{print $1}' | xargs -P 5 -n 1 restart-app.sh
-cf apps | tail -n +5 | grep 0/ | awk '{print $1}' | xargs -P 5 -n 1 restart-app.sh
+SCRIPT_DIR="${BASH_SOURCE%/*}"
+if [[ ! -d "$SCRIPT_DIR" ]]; then
+  SCRIPT_DIR="$PWD";
+fi
+
+cf apps | tail -n +5 | grep ? | awk '{print $1}' | xargs -P 5 -n 1 $SCRIPT_DIR/restart-app.sh
+cf apps | tail -n +5 | grep 0/ | awk '{print $1}' | xargs -P 5 -n 1 $SCRIPT_DIR/restart-app.sh

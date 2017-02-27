@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
 
-cf stop $1
+time cf stop $1

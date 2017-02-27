@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
 
-cf restart $1
+time cf restart $1
