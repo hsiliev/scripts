@@ -50,7 +50,13 @@ echo ""
 echo "Getting token for $CLIENT_ID from $AUTH_SERVER ..."
 TOKEN=$(curl -k --user $CLIENT_ID:$CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=abacus.usage.read" | jq -r .access_token)
 if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
-  echo "No token found ! Are your credentials correct (CLIENT_ID and CLIENT_SECRET)?"
+  echo ""
+  echo "No token found ! Running diagnostics ..."
+  set -x
+  curl -i -k --user $CLIENT_ID:$CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=abacus.usage.read"
+  set +x
+  echo ""
+  echo "Are your credentials correct (CLIENT_ID and CLIENT_SECRET)?"
   exit 1
 fi
 echo "Token obtained"
