@@ -3,7 +3,7 @@
 function goto {
   local p
   local f
- 
+
   for p in `echo $GOPATH | tr ':' '\n'`; do
     f=`find ${p}/src -type d -not -path '*/.*' | grep "${1}" | awk '{ print length, $0 }' | sort -n | cut -d" " -f2- | head -n 1`
     if [ -n "$f" ]; then
@@ -11,14 +11,14 @@ function goto {
       return
     fi
   done
- 
+
   workto "$@"
 }
- 
+
 function workto {
   local p
   local f
- 
+
   f=`find ~/workspace -type d -not -path '*/.*' | grep "${1}" | awk '{ print length, $0 }' | sort -n | cut -d" " -f2- | head -n 1`
   if [ -n "$f" ]; then
     cd $f
@@ -103,14 +103,6 @@ export SCM_CHECK=true
 #export VCPROMPT_EXECUTABLE=~/.vcprompt/bin/vcprompt
 
 #
-# dockermachine
-#
-export DOCKER_TLS_VERIFY="1"
-export DOCKER_HOST="tcp://192.168.99.100:2376"
-export DOCKER_CERT_PATH="/Users/development/.docker/machine/machines/dev"
-export DOCKER_MACHINE_NAME="dev"
-
-#
 # cloud_controller_ng
 #
 #export DB_CONNECTION_STRING="mysql2://root:password@localhost:3306/cc_test"
@@ -147,8 +139,8 @@ export ABACUS_HOME=/Users/development/workspace/cf-abacus
 export NO_ISTANBUL=true
 
 # abacus ops
-export ABACUS_CF_BRIDGE_CLIENT_ID=abacus-cf-bridge
-export ABACUS_CF_BRIDGE_CLIENT_SECRET=secret
+export ABACUS_CC_CLIENT_ID=abacus-cc-client
+export ABACUS_CC_CLIENT_SECRET=secret
 export SYSTEM_CLIENT_ID=abacus
 export SYSTEM_CLIENT_SECRET=secret
 export CLIENT_ID=abacus-linux-container
@@ -158,7 +150,6 @@ function abacus-module {
   local p
   local f
 
-   
   for p in `echo $ABACUS_HOME | tr ':' '\n'`; do
     f=`find ${p}/lib -type d -not -path '*/.*' | grep "${1}" | awk '{ print length, $0 }' | sort -n | cut -d" " -f2- | head -n 1`
     if [ -n "$f" ]; then
