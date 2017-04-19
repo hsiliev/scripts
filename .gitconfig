@@ -11,6 +11,7 @@
   plog = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
   ps = push --recurse-submodules=check
   pig = push --recurse-submodules=check
+  last = log -1 HEAD
 [apply]
   whitespace = nowarn
 [color]
