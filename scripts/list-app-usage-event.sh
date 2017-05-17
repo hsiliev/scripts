@@ -54,7 +54,7 @@ echo "Using API URL $API"
 echo ""
 
 echo "Getting token for $ABACUS_CC_CLIENT_ID from $AUTH_SERVER ..."
-TOKEN=$(curl --user "$ABACUS_CC_CLIENT_ID:$ABACUS_CC_CLIENT_SECRET" -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials" | jq -r .access_token)
+TOKEN=$(curl -k --user "$ABACUS_CC_CLIENT_ID:$ABACUS_CC_CLIENT_SECRET" -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials" | jq -r .access_token)
 if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
   echo "No token found ! Are your credentials correct (ABACUS_CC_CLIENT_ID and ABACUS_CC_CLIENT_SECRET)?"
   exit 1
@@ -64,9 +64,9 @@ echo ""
 
 echo "App usage events metadata:"
 if [ $show_all = 1 ]; then
- curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000" | jq 'del(.resources)'
+ curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000" | jq 'del(.resources)'
 else
- curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1" | jq 'del(.resources)'
+ curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1" | jq 'del(.resources)'
 fi
 echo ""
 
@@ -90,12 +90,12 @@ if [ $show_all = 1 ]; then
     echo ""
 
     echo "Filtering page $page with 10000 usage events for org guid $ORG_GUID ..."
-    curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000&page=$page" | jq ".resources[].entity | select(.org_guid == \"$ORG_GUID\")"
+    curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000&page=$page" | jq ".resources[].entity | select(.org_guid == \"$ORG_GUID\")"
   else
     echo "Listing page $page with 10000 usage events ..."
-    curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000&page=$page" | jq .
+    curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000&page=$page" | jq .
   fi
 else
   echo "Get app usage event #$page..."
-  curl -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1&page=$page"
+  curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1&page=$page"
 fi
