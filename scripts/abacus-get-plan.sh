@@ -3,11 +3,10 @@ set -e
 
 function show_help {
   cat << EOF
-Usage: ${0##*/} [-ha] <organization name>
+Usage: ${0##*/} [-ha] <plan id>
 
 Get org usage
   -h,-? display this help and exit
-  -a    display the whole report
 EOF
 }
 
@@ -37,7 +36,7 @@ if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
   exit 1
 fi
 if [ -z "$1" ]; then
-  echo "No organization specified !"
+  echo "No plan id specified !"
   exit 1
 fi
 
@@ -62,17 +61,6 @@ fi
 echo "Token obtained"
 echo ""
 
-echo "Get organization $1 guid ..."
-set +e
-ORG_GUID=$(cf org $1 --guid)
-if [ $? != 0 ]; then
-  echo "Organization $1 not found !"
-  exit 1
-fi
-set -e
-echo "Done."
-echo ""
-
 echo "Getting current domain ..."
 DOMAIN=$(cf domains | awk '{if (NR == 3) {print $1}}')
 echo "Using domain $DOMAIN"
@@ -82,22 +70,21 @@ if [ -z "$DOMAIN" ]; then
   exit 1
 fi
 
-URL="https://${ABACUS_PREFIX}abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage"
+BASE_URL="https://${ABACUS_PREFIX}abacus-provisioning-plugin.$DOMAIN"
 
-echo "Using $URL"
-echo ""
 
-echo "Getting report for org $1 ($ORG_GUID) from $URL ..."
-set +e
-if [ $show_all == 1 ]; then
-  OUTPUT=$(curl -k -i -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL | jq .)
-else
-  OUTPUT=$(curl -k -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL | jq .resources[0].plans[0].aggregated_usage[0])
-fi
-if [ "$OUTPUT" == "null" -o -z "$OUTPUT" ]; then
-  echo ""
-  echo "No report data! Getting original response:"
-  curl -k -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL
-else
-  echo $OUTPUT | jq .
-fi
+function getPlan() {
+  echo "Getting plan from $2/$1 ..."
+  OUTPUT=$(curl -k -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$2/$1")
+  if [[ ! $OUTPUT =~ \{.*\} ]]; then
+    echo ""
+    echo "No plan data! Getting original response:"
+    curl -k -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $2/$1
+  else
+    echo $OUTPUT | jq .
+  fi
+}
+
+getPlan $1 "$BASE_URL/v1/metering/plans"
+getPlan $1 "$BASE_URL/v1/rating/plans"
+getPlan $1 "$BASE_URL/v1/pricing/plans"
