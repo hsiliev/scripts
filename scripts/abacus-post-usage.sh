@@ -27,7 +27,17 @@ echo "Token obtained"
 echo ""
 
 echo "Get organization $1 guid ..."
+set +e
 ORG_GUID=$(cf org $1 --guid)
+if [ $? != 0 ]; then
+  orgLength=${#1}
+  if [ $orgLength != 36 ]; then
+    exit 1
+  fi
+  echo "Assuming $1 is org's GUID ..."
+  ORG_GUID=$1
+fi
+set -e
 echo "Done."
 echo ""
 

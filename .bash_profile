@@ -143,7 +143,7 @@ export ABACUS_CC_CLIENT_ID=abacus-cc-client
 export ABACUS_CC_CLIENT_SECRET=secret
 export SYSTEM_CLIENT_ID=abacus
 export SYSTEM_CLIENT_SECRET=secret
-export CLIENT_ID=abacus-linux-container
+export CLIENT_ID=abacus
 export CLIENT_SECRET=secret
 
 function abacus-module {

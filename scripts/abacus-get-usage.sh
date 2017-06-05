@@ -66,8 +66,12 @@ echo "Get organization $1 guid ..."
 set +e
 ORG_GUID=$(cf org $1 --guid)
 if [ $? != 0 ]; then
-  echo "Organization $1 not found !"
-  exit 1
+  orgLength=${#1}
+  if [ $orgLength != 36 ]; then
+    exit 1
+  fi
+  echo "Assuming $1 is org's GUID ..."
+  ORG_GUID=$1
 fi
 set -e
 echo "Done."
@@ -90,14 +94,20 @@ echo ""
 echo "Getting report for org $1 ($ORG_GUID) from $URL ..."
 set +e
 if [ $show_all == 1 ]; then
-  OUTPUT=$(curl -k -i -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL | jq .)
+  OUTPUT=$(curl -k -i -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL)
 else
-  OUTPUT=$(curl -k -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL | jq .resources[0].plans[0].aggregated_usage[0])
+  OUTPUT=$(curl -k -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL)
 fi
-if [ "$OUTPUT" == "null" -o -z "$OUTPUT" ]; then
+if [[ ! $OUTPUT =~ \{.*\} ]]; then
   echo ""
-  echo "No report data! Getting original response:"
+  echo "No report data! Original response: $OUTPUT"
+  echo ""
+  echo "Running diagnostics request ..."
   curl -k -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL
 else
-  echo $OUTPUT | jq .
+  if [ $show_all == 1 ]; then
+    echo $OUTPUT | jq .
+  else
+    echo $OUTPUT | jq .resources[0].plans[0].aggregated_usage[0]
+  fi
 fi
