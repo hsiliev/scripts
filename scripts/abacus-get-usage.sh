@@ -59,7 +59,7 @@ if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
   echo "Are your credentials correct (CLIENT_ID and CLIENT_SECRET)?"
   exit 1
 fi
-echo "Token obtained"
+echo "Obtained token $TOKEN"
 echo ""
 
 echo "Get organization $1 guid ..."
