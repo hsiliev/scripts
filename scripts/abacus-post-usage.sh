@@ -46,6 +46,7 @@ echo ""
 
 echo "Getting first CF domain ..."
 DOMAIN=$(cf domains | awk '{if (NR == 3) {print $1}}')
+DOMAIN=${DOMAIN/cfapps/cf}
 echo "Using domain $DOMAIN"
 echo ""
 if [ -z "$DOMAIN" ]; then
