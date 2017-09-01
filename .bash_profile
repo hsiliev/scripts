@@ -49,9 +49,9 @@ export NVM_DIR=~/.nvm
 
 # aliases
 alias ll="ls -la"
+alias env="env | sort"
 alias set-proxy="source $HOME/scripts/set-proxy.sh"
 alias unset-proxy="source $HOME/scripts/unset-proxy.sh"
-alias goddamit="$HOME/scripts/deploy.sh"
 
 # Java
 export JAVA_HOME=`/usr/libexec/java_home -v 1.8`

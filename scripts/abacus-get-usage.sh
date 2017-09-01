@@ -40,7 +40,7 @@ if [ -z "$1" ]; then
   exit 1
 fi
 SCOPE="abacus.usage.read"
-if [ ! -z "$RESOURCE_ID" ]; then
+if [ -n "$RESOURCE_ID" ]; then
   SCOPE="abacus.usage.$RESOURCE_ID.read"
 fi
 
@@ -93,12 +93,8 @@ echo ""
 
 echo "Getting report for org $1 ($ORG_GUID) from $URL ..."
 set +e
-echo "curl -k -i -s -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' $URL"
-if [ $show_all == 1 ]; then
-  OUTPUT=$(curl -k -i -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL)
-else
-  OUTPUT=$(curl -k -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL)
-fi
+echo "curl -k -s -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' $URL"
+OUTPUT=$(curl -k -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL)
 
 if [[ $OUTPUT = "{}" ]]; then
   echo ""
