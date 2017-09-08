@@ -54,14 +54,14 @@ echo "Getting token for $CLIENT_ID with scope $SCOPE from $AUTH_SERVER ..."
 TOKEN=$(curl -k --user $CLIENT_ID:$CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=$SCOPE" | jq -r .access_token)
 if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
   echo ""
-  echo "No token found ! Running diagnostics ..."
-  echo "curl -i -k --user $CLIENT_ID:$CLIENT_SECRET -s $AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=$SCOPE"
+  echo "No token found ! Running diagnostics request ..."
+  echo ">>> curl -i -k --user $CLIENT_ID:$CLIENT_SECRET -s $AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=$SCOPE"
   curl -i -k --user $CLIENT_ID:$CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=$SCOPE"
   echo ""
   echo "Are your credentials (CLIENT_ID, CLIENT_SECRET and RESOURCE_ID) correct?"
   exit 1
 fi
-echo "Obtained token $TOKEN"
+echo "Obtained token"
 echo ""
 
 echo "Get organization $1 guid ..."
@@ -93,7 +93,17 @@ echo ""
 
 echo "Getting report for org $1 ($ORG_GUID) from $URL ..."
 set +e
-echo "curl -k -s -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' $URL"
+CODE=$(curl -ksL -w "%{http_code}\\n" -H "Authorization: bearer $TOKEN" -H 'Content-Type: application/json' $URL -o /dev/null)
+if [[ CODE -ne 200 ]]; then
+  echo ""
+  echo "Bad response code $CODE. Running diagnostics request ..."
+  echo ""
+  echo ">>> curl -kisL -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' $URL"
+  echo ""
+  curl -kisL -H "Authorization: bearer $TOKEN" -H 'Content-Type: application/json' $URL
+  exit 1
+fi
+echo ">>> curl -k -s -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' $URL"
 OUTPUT=$(curl -k -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL)
 
 if [[ $OUTPUT = "{}" ]]; then
