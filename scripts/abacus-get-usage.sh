@@ -51,7 +51,7 @@ echo "Using API URL $API"
 echo ""
 
 echo "Getting token for $CLIENT_ID with scope $SCOPE from $AUTH_SERVER ..."
-TOKEN=$(curl -k --user $CLIENT_ID:$CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=$SCOPE" | jq -r .access_token)
+TOKEN=$(curl -k --user $CLIENT_ID:$CLIENT_SECRET -X POST -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=$SCOPE" | jq -r .access_token)
 if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
   echo ""
   echo "No token found ! Running diagnostics request ..."

@@ -33,14 +33,14 @@ CODE=$(curl -ksL -w "%{http_code}\\n" -H "Authorization: bearer $TOKEN" -H 'Cont
 
 while [[ $CODE -ne 200 ]]; do
   echo ""
-  echo "Response code $CODE != 200 ..."
+  echo "$(date): Response code $CODE != 200 ..."
   echo ""
-  TOKEN=$(curl -k --user $CLIENT_ID:$CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=$SCOPE" | jq -r .access_token)
+  TOKEN=$(curl -k --user $CLIENT_ID:$CLIENT_SECRET -X POST -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=$SCOPE" | jq -r .access_token)
   OUTPUT=$(curl -ksL -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL | cut -d ':' -f 4)
   APP_ID=${OUTPUT:0:36}
   TIME=${OUTPUT:39:16}
   if [[ -z $APP_ID ]]; then
-    echo "Cannot find application id"
+    echo "Cannot find application id. Output was: $PURE_OUTPUT"
     exit 1
   fi
   echo "Removing app:$APP_ID/t/$TIME ..."
