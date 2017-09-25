@@ -112,7 +112,7 @@ if [[ $OUTPUT = "{}" ]]; then
   exit 0
 fi
 
-if [[ ! $OUTPUT =~ \{.*\} ]]; then
+if [[ ! $OUTPUT =~ \{.*\} ]] || [[ ! $OUTPUT =~ .*"resources":\[\],"spaces":\[\],"windows":\[\]\} ]]; then
   echo ""
   echo "No report data! Original response: $OUTPUT"
   echo ""
