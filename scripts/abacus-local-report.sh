@@ -1,8 +1,8 @@
 #!/bin/bash
 
-org_guid=$1
+ORG_GUID=$1
 if [[ -z "$ORG_GUID" ]]; then
-  org_guid=34db180b-dc68-4305-bd95-a9af80ba7c4c
+  ORG_GUID=34db180b-dc68-4305-bd95-a9af80ba7c4c
 fi
 echo "Using org $org_guid"
 
@@ -23,7 +23,7 @@ if [ -n "$SECURED" ]; then
   echo ""
 fi
 
-url="http://localhost:9088/v1/metering/organizations/$org_guid/aggregated/usage"
+url="http://localhost:9088/v1/metering/organizations/$ORG_GUID/aggregated/usage"
 echo "Getting usage from $url ..."
 if [ -n "$SECURED" ]; then
   echo "curl -k -H 'Content-Type: application/json' -H 'Authorization: bearer $token' $url"

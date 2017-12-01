@@ -3,27 +3,21 @@ set -e
 
 function show_help {
   cat << EOF
-Usage: ${0##*/} [-ha] <organization name>
+Usage: ${0##*/} [-ha] <query>
 
 Get org usage
   -h,-? display this help and exit
-  -a    display the whole report
 EOF
 }
 
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
-# Initialize our own variables
-show_all=0
-
 while getopts "h?a" opt; do
     case "$opt" in
       h|\?)
         show_help
         exit 0
-        ;;
-      a)  show_all=1
         ;;
     esac
 done
@@ -64,64 +58,23 @@ fi
 echo "Obtained token"
 echo ""
 
-echo "Get organization $1 guid ..."
-set +e
-ORG_GUID=$(cf org $1 --guid)
-if [ $? != 0 ]; then
-  echo "Assuming $1 is org's GUID ..."
-  ORG_GUID=$1
-fi
-set -e
-echo "Done."
-echo ""
-
 echo "Getting current domain ..."
 DOMAIN=$(cf domains | awk '{if (NR == 3) {print $1}}')
 DOMAIN=${DOMAIN/cfapps/cf}
 echo "Using domain $DOMAIN"
 echo ""
-if [ -z "$DOMAIN" ]; then
+if [ -z "$DOMAIN" ] || [ "$DOMAIN" == 'Failed' ]; then
   echo "No domain found ! Are your logged in CF?"
   exit 1
 fi
 
 DATE_IN_MS="$(date +%s000)"
-URL="https://${ABACUS_PREFIX}abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage/$DATE_IN_MS"
+URL="https://${ABACUS_PREFIX}abacus-usage-reporting.$DOMAIN/v1/metering/aggregated/usage/graph/"
+QUERY=$(node -p "encodeURIComponent('$1')")
 
 echo "Using $URL"
 echo ""
 
-echo "Getting report for org $1 ($ORG_GUID) from $URL ..."
-set +e
-CODE=$(curl -ksL -w "%{http_code}\\n" -H "Authorization: bearer $TOKEN" -H 'Content-Type: application/json' $URL -o /dev/null)
-if [[ CODE -ne 200 ]]; then
-  echo ""
-  echo "Bad response code $CODE. Running diagnostics request ..."
-  echo ""
-  echo ">>> curl -kisL -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' $URL"
-  echo ""
-  curl -kisL -H "Authorization: bearer $TOKEN" -H 'Content-Type: application/json' $URL
-  exit 1
-fi
-echo ">>> curl -k -s -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' $URL"
-OUTPUT=$(curl -k -s -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL)
-
-if [[ $OUTPUT = "{}" ]]; then
-  echo ""
-  echo "Report is empty: $OUTPUT"
-  exit 0
-fi
-
-if [[ ! $OUTPUT =~ \{.*\} ]] || [[ $OUTPUT =~ .*"resources":\[\],"spaces":\[\],"windows":\[\]\} ]]; then
-  echo ""
-  echo "No report data! Original response: $OUTPUT"
-  echo ""
-  echo "Running diagnostics request ..."
-  curl -k -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL
-else
-  if [ $show_all == 1 ]; then
-    echo $OUTPUT | jq .
-  else
-    echo $OUTPUT | jq .resources[0].plans[0].aggregated_usage[0]
-  fi
-fi
+echo "Getting report with query $1 from $URL ..."
+echo ">>> curl -ksG -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' $URL$QUERY | jq ."
+curl -ksG -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL$QUERY | jq .

@@ -138,14 +138,6 @@ cd $HOME/workspace
 export ABACUS_HOME=/Users/development/workspace/cf-abacus
 export NO_ISTANBUL=true
 
-# abacus ops
-export ABACUS_CC_CLIENT_ID=abacus-cc-client
-export ABACUS_CC_CLIENT_SECRET=secret
-export SYSTEM_CLIENT_ID=abacus
-export SYSTEM_CLIENT_SECRET=secret
-export CLIENT_ID=abacus
-export CLIENT_SECRET=secret
-
 function abacus-module {
   local p
   local f
@@ -159,10 +151,10 @@ function abacus-module {
   done
 }
 
-# concourse jumpbox
-export concourse_ip=127.0.0.1
-export concourse_port=8888
-export concourse_platform=${OSTYPE//[0-9.]/}
-
 # iTerm shell integration
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+# BASH completion
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+. $(brew --prefix)/etc/bash_completion
+fi
