@@ -54,7 +54,7 @@ alias set-proxy="source $HOME/scripts/set-proxy.sh"
 alias unset-proxy="source $HOME/scripts/unset-proxy.sh"
 
 # Java
-export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
+export JAVA_HOME=`/usr/libexec/java_home -v 9`
 launchctl setenv JAVA_HOME $JAVA_HOME
 
 # Maven
