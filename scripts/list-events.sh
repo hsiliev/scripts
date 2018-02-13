@@ -3,11 +3,11 @@ set -e
 
 function show_help {
   cat << EOF
-Usage: ${0##*/} [-hfa] <page number>
+Usage: ${0##*/} [-hao:] <page number>
 
-Shows app usage events
+Shows all events
   -h    display this help and exit
-  -f    filter current organization
+  -o    filter organization
   -a    show all events
 EOF
 }
@@ -25,7 +25,7 @@ show_all=0
 filter_org=0
 page=$1
 
-while getopts "haf" opt; do
+while getopts "hao:" opt; do
     case "$opt" in
       h|\?)
         show_help
@@ -34,8 +34,8 @@ while getopts "haf" opt; do
       a)
         show_all=1
         ;;
-      f)
-        filter_org=1
+      o)
+        ORG_GUID=$OPTARG
         ;;
     esac
 done
@@ -43,7 +43,7 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
-echo "Arguments: show_all='$show_all', filter_org='$filter_org', page='$page', Leftovers: $@"
+echo "Arguments: show_all='$show_all', org='$ORG_GUID', page='$page', Leftovers: $@"
 echo ""
 
 echo "Obtaining API endpoint URL ..."
@@ -61,41 +61,38 @@ fi
 echo "Token $TOKEN obtained"
 echo ""
 
-echo "App usage events metadata:"
-EVENTS=$(curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/service_usage_events?results-per-page=1" | jq '.total_results')
-PAGES=$((EVENTS / 10000 + 1))
+echo "Events metadata:"
+EVENTS=$(curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/events?results-per-page=1" | jq '.total_results')
+PAGES=$((EVENTS / 100 + 1))
 echo "   events: $EVENTS"
 echo "   pages : $PAGES"
 echo ""
 
-
 if [ $show_all = 1 ]; then
-  FILTER=".resources[].entity"
+  FILTER=""
 
-  if [ $filter_org = 1 ]; then
-    if [ -z ORG_GUID ]; then
-      ORG=$(cf target | awk '{if (NR == 4) {print $2}}')
-      echo "Get organization $ORG guid ..."
-      set +e
-      ORG_GUID=$(cf org $ORG --guid)
-      if [ $? != 0 ]; then
-        echo "Organization $ORG not found !"
-        exit 1
-      fi
-      set -e
-      echo "Done."
-      echo ""
-    else
-      echo "Using organization guid $ORG_GUID"
-      echo ""
+  if [[ -z $ORG_GUID ]]; then
+    ORG=$(cf target | awk '{if (NR == 4) {print $2}}')
+    echo "Get organization $ORG guid ..."
+    set +e
+    ORG_GUID=$(cf org $ORG --guid)
+    if [ $? != 0 ]; then
+      echo "Organization $ORG not found !"
+      exit 1
     fi
-
-    FILTER=".resources[].entity | select(.org_guid == \"$ORG_GUID\")"
+    set -e
+    echo "Done."
+    echo ""
+  else
+    echo "Using organization guid '$ORG_GUID'"
+    echo ""
   fi
+
+  FILTER="&q=organization_guid:$ORG_GUID"
 
   for ((i=1;i<=PAGES;i++)); do
     echo "Listing events on page: $i ..."
-    curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000&page=$i" | jq "$FILTER"
+    curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/events?results-per-page=100&page=$i$FILTER" | jq ".resources[].entity"
   done
 else
   if [ -z $page ]; then
@@ -104,5 +101,5 @@ else
   fi
 
   echo "Get app usage event #$page..."
-  curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1&page=$page"
+  curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/events?results-per-page=1&page=$page"
 fi
