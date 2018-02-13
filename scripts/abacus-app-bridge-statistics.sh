@@ -28,13 +28,13 @@ if [ -z "$URL" ]; then
   echo "Cannot find URL! Have you targeted abacus org/space?"
   exit 1
 fi
-URL="https://$URL/v1/cf/applications"
+URL="https://$URL/v1/stats"
 echo "Using $URL"
 echo ""
 
 echo "Getting statistics ..."
 set +e
-OUTPUT=$(curl -sH "Authorization: bearer $TOKEN" $URL | jq 'del(.applications.performance)')
+OUTPUT=$(curl -sH "Authorization: bearer $TOKEN" $URL | jq 'del(.performance)')
 set -e
 if [[ "$OUTPUT" == *"parse error"* ]] || [[ "$OUTPUT" == *"jq: error"* ]] || [[ -z "$OUTPUT" ]]; then
   echo ""
@@ -43,4 +43,3 @@ if [[ "$OUTPUT" == *"parse error"* ]] || [[ "$OUTPUT" == *"jq: error"* ]] || [[ 
 else
   echo $OUTPUT | jq .
 fi
-

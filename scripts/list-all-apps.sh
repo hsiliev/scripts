@@ -35,6 +35,7 @@ while getopts "hao:" opt; do
         show_all=1
         ;;
       o)
+        filter_org=1
         ORG_GUID=$OPTARG
         ;;
     esac
@@ -71,24 +72,26 @@ echo ""
 if [ $show_all = 1 ]; then
   FILTER=""
 
-  if [[ -z $ORG_GUID ]]; then
-    ORG=$(cf target | awk '{if (NR == 4) {print $2}}')
-    echo "Get organization $ORG guid ..."
-    set +e
-    ORG_GUID=$(cf org $ORG --guid)
-    if [ $? != 0 ]; then
-      echo "Organization $ORG not found !"
-      exit 1
+  if [[ $filter_org = 1 ]]; then
+    if [[ -z $ORG_GUID ]]; then
+      ORG=$(cf target | awk '{if (NR == 4) {print $2}}')
+      echo "Get organization $ORG guid ..."
+      set +e
+      ORG_GUID=$(cf org $ORG --guid)
+      if [ $? != 0 ]; then
+        echo "Organization $ORG not found !"
+        exit 1
+      fi
+      set -e
+      echo "Done."
+      echo ""
+    else
+      echo "Using organization guid '$ORG_GUID'"
+      echo ""
     fi
-    set -e
-    echo "Done."
-    echo ""
-  else
-    echo "Using organization guid '$ORG_GUID'"
-    echo ""
-  fi
 
-  FILTER="&q=organization_guid:$ORG_GUID"
+    FILTER="&q=organization_guid:$ORG_GUID"
+  fi
 
   for ((i=1;i<=PAGES;i++)); do
     echo "Listing events on page: $i ..."
