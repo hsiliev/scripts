@@ -3,11 +3,11 @@ set -e
 
 function show_help {
   cat << EOF
-Usage: ${0##*/} [-hfa] <page number>
+Usage: ${0##*/} [-hao] <page number>
 
 Shows app usage events
   -h    display this help and exit
-  -f    filter current organization
+  -o    filter organization
   -a    show all events
 EOF
 }
@@ -25,7 +25,7 @@ show_all=0
 filter_org=0
 page=$1
 
-while getopts "haf" opt; do
+while getopts "hao:" opt; do
     case "$opt" in
       h|\?)
         show_help
@@ -34,8 +34,9 @@ while getopts "haf" opt; do
       a)
         show_all=1
         ;;
-      f)
+      o)
         filter_org=1
+        ORG_GUID=$OPTARG
         ;;
     esac
 done
@@ -43,7 +44,7 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
-echo "Arguments: show_all='$show_all', filter_org='$filter_org', page='$page', Leftovers: $@"
+echo "Arguments: show_all='$show_all', org='$ORG_GUID', page='$page', Leftovers: $@"
 echo ""
 
 echo "Obtaining API endpoint URL ..."
@@ -73,7 +74,7 @@ if [ $show_all = 1 ]; then
   FILTER=".resources[].entity"
 
   if [ $filter_org = 1 ]; then
-    if [ -z ORG_GUID ]; then
+    if [ -z $ORG_GUID ]; then
       ORG=$(cf target | awk '{if (NR == 4) {print $2}}')
       echo "Get organization $ORG guid ..."
       set +e
