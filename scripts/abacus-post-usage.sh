@@ -6,7 +6,7 @@ if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
   echo "Missing CLIENT_ID or CLIENT_SECRET !"
   exit 1
 fi
-if [ -z "$1" ]; then
+if [ -z "$1" ] && [ -z $ORG_GUID ]; then
   echo "No organization specified !"
   exit 1
 fi
@@ -30,24 +30,6 @@ fi
 echo "Token obtained"
 echo ""
 
-echo "Get organization $1 and space info ..."
-set +e
-ORG_GUID=$(cf org $1 --guid)
-if [ $? != 0 ]; then
-  echo "Assuming $1 is org's GUID ..."
-  ORG_GUID=$1
-else
-  echo "List spaces for org $1 ..."
-  SPACE=$(cf org $1 | awk '{ if (NR==7) {print $2}}')
-  echo "Get space $SPACE guid ..."
-  SPACE_GUID=$(cf space $SPACE --guid)
-  echo "Done."
-  echo ""
-fi
-set -e
-echo "Done."
-echo ""
-
 echo "Getting first CF domain ..."
 DOMAIN=$(cf domains | awk '{if (NR == 3) {print $1}}')
 DOMAIN=${DOMAIN/cfapps/cf}
@@ -64,19 +46,33 @@ URL="https://${ABACUS_PREFIX}abacus-usage-collector.$DOMAIN/v1/metering/collecte
 echo "Using $URL"
 echo ""
 
-DATE_IN_MS="$(date +%s000)"
+if [[ -z $ORG_GUID ]]; then
+  echo "Get organization $1 and space info ..."
+  set +e
+  ORG_GUID=$(cf org $1 --guid)
+  if [ $? != 0 ]; then
+    echo "Assuming $1 is org's GUID ..."
+    ORG_GUID=$1
+  else
+    echo "List spaces for org $1 ..."
+    SPACE=$(cf org $1 | awk '{ if (NR==7) {print $2}}')
+    echo "Get space $SPACE guid ..."
+    SPACE_GUID=$(cf space $SPACE --guid)
+    echo "Done."
+    echo ""
+  fi
+  set -e
+  echo "Done."
+  echo ""
+fi
+
+if [[ -z $DATE_IN_MS ]]; then
+  DATE_IN_MS="$(date +%s000)"
+fi
+
 BODY="{\"start\":$DATE_IN_MS,\"end\":$DATE_IN_MS,\"organization_id\":\"$ORG_GUID\",\"space_id\":\"$SPACE_GUID\",\"resource_id\":\"iotae\",\"plan_id\":\"basic\",\"consumer_id\":\"app:1fb61c1f-2db3-4235-9934-00097845b80d\",\"resource_instance_id\":\"1fb61c1f-2db3-4235-9934-00097845b80d\",\"measured_usage\":[{\"measure\":\"warm_store\",\"quantity\":7},{\"measure\":\"cold_store\",\"quantity\":7},{\"measure\":\"aggregate_store\",\"quantity\":7},{\"measure\":\"api_calls\",\"quantity\":7}]}"
 BODY="{\"start\":$DATE_IN_MS,\"end\":$DATE_IN_MS,\"organization_id\":\"$ORG_GUID\",\"space_id\":\"73109c5e-76ae-40db-843a-7ab234abadfd\",\"consumer_id\":\"na\",\"resource_id\":\"1dc0754a-fdaf-4da7-89a1-d10124a5068c\",\"plan_id\":\"1dc0754a-fdaf-4da7-89a1-d10124a5068c-1dc0754a-fdaf-4da7-89a1-d10124a5068c\",\"resource_instance_id\":\"73109c5e-76ae-40db-843a-7ab234abadfd\",\"measured_usage\":[{\"measure\":\"api_calls\",\"quantity\":3545}]}"
-echo "curl -i -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' -X POST -d $BODY $URL"
-echo ""
-echo "Will submit usage $(echo $BODY | jq .)"
-echo ""
-curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" -X POST -d $BODY $URL
+BODY="{\"start\":$DATE_IN_MS,\"end\":$DATE_IN_MS,\"organization_id\":\"c337c97a-d183-465e-9213-4b821a09af98\",\"space_id\":\"54ba27fa-4808-4bf4-8e61-17d855efafcb\",\"resource_id\":\"linux-container\",\"plan_id\":\"basic\",\"consumer_id\":\"app:cb5c53de-42fb-40de-a54a-8053210b55c6\",\"resource_instance_id\":\"memory:cb5c53de-42fb-40de-a54a-8053210b55c6\",\"measured_usage\":[{\"measure\":\"current_instance_memory\",\"quantity\":268435456},{\"measure\":\"current_running_instances\",\"quantity\":100},{\"measure\":\"previous_instance_memory\",\"quantity\":0},{\"measure\":\"previous_running_instances\",\"quantity\":0}]}"
 
-if [ "$(uname)" != "Darwin" ]; then
-  DATE_IN_MS=$(date --date="$(date +%Y-%m-1) -1 month" +%s000)
-  BODY="{\"start\":$DATE_IN_MS,\"end\":$DATE_IN_MS,\"organization_id\":\"$ORG_GUID\",\"space_id\":\"$SPACE_GUID\",\"resource_id\":\"linux-container\",\"plan_id\":\"basic\",\"consumer_id\":\"app:1fb61c1f-2db3-4235-9934-00097845b80d\",\"resource_instance_id\":\"1fb61c1f-2db3-4235-9934-00097845b80d\",\"measured_usage\":[{\"measure\":\"current_instance_memory\",\"quantity\":512},{\"measure\":\"current_running_instances\",\"quantity\":1},{\"measure\":\"previous_instance_memory\",\"quantity\":0},{\"measure\":\"previous_running_instances\",\"quantity\":0}]}"
-  echo "Will submit usage for the last month $(echo $BODY | jq .)"
-  echo ""
-  curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" -X POST -d $BODY $URL
-fi
+echo ">>> curl -i -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' -X POST -d $BODY $URL"
+curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" -X POST -d $BODY $URL

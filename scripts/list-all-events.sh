@@ -61,13 +61,6 @@ fi
 echo "Token $TOKEN obtained"
 echo ""
 
-echo "Events metadata:"
-EVENTS=$(curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/events?results-per-page=1" | jq '.total_results')
-PAGES=$((EVENTS / 100 + 1))
-echo "   events: $EVENTS"
-echo "   pages : $PAGES"
-echo ""
-
 if [ $show_all = 1 ]; then
   FILTER=""
 
@@ -86,13 +79,19 @@ if [ $show_all = 1 ]; then
   else
     echo "Using organization guid '$ORG_GUID'"
     echo ""
+    FILTER="&q=organization_guid:$ORG_GUID"
   fi
 
-  FILTER="&q=organization_guid:$ORG_GUID"
+  echo "Events metadata:"
+  EVENTS=$(curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/events?results-per-page=1$FILTER" | jq '.total_results')
+  PAGES=$((EVENTS / 100 + 1))
+  echo "   events: $EVENTS"
+  echo "   pages : $PAGES"
+  echo ""
 
   for ((i=1;i<=PAGES;i++)); do
     echo "Listing events on page: $i ..."
-    curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/events?results-per-page=100&page=$i$FILTER" | jq ".resources[].entity"
+    curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/events?results-per-page=100&order-by=timestamp&order-direction=asc&page=$i$FILTER" | jq ".resources[].entity"
   done
 else
   if [ -z $page ]; then
@@ -101,5 +100,5 @@ else
   fi
 
   echo "Get app usage event #$page..."
-  curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/events?results-per-page=1&page=$page"
+  curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/events?results-per-page=1&order-by=timestamp&order-direction=asc&page=$page"
 fi
