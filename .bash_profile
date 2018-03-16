@@ -48,7 +48,7 @@ export NVM_DIR=~/.nvm
 . $(brew --prefix nvm)/nvm.sh
 
 # aliases
-alias ll="ls -la"
+alias ll="ls -laG"
 alias env="env | sort"
 alias set-proxy="source $HOME/scripts/set-proxy.sh"
 alias unset-proxy="source $HOME/scripts/unset-proxy.sh"

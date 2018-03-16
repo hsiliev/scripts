@@ -31,7 +31,7 @@ export GOPATH=~/workspace/Go
 export GOROOT=/usr/local/go
 
 # aliases
-alias ll="ls -la"
+alias ll="ls -laG"
 alias set-proxy="source $HOME/scripts/set-proxy.sh"
 alias unset-proxy="source $HOME/scripts/unset-proxy.sh"
 alias goddamit="$HOME/scripts/deploy.sh"
