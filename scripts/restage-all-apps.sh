@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 SCRIPT_DIR="${BASH_SOURCE%/*}"
@@ -14,7 +13,5 @@ fi
 
 echo "Using $PARALLEL_JOBS parallel jobs."
 
-echo "Deleting applications ..."
-for i in {1..5}; do
-  (cf apps | tail -n +5 | awk '{print $1}' | xargs -P $PARALLEL_JOBS -n 1 $SCRIPT_DIR/delete-app.sh) && break || sleep 1;
-done
+echo "Listing applications ..."
+cf apps | tail -n +5 | awk '{print $1}' | xargs -P $PARALLEL_JOBS -n 1 $SCRIPT_DIR/restage-app.sh

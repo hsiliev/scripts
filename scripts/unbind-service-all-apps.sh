@@ -6,4 +6,4 @@ if [[ ! -d "$SCRIPT_DIR" ]]; then
 fi
 
 echo "Listing applications ..."
-cf apps | tail -n +5 | awk '{print $1}' | xargs -P 20 -n 1 $SCRIPT_DIR/unset-env-app.sh $1 
+cf apps | tail -n +5 | awk '{print $1}' | xargs -P 20 -n 1 $SCRIPT_DIR/unbind-service-app.sh $1

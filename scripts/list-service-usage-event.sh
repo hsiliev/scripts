@@ -5,7 +5,7 @@ function show_help {
   cat << EOF
 Usage: ${0##*/} [-hfa] <page number>
 
-Shows app usage events
+Shows service usage events
   -h    display this help and exit
   -f    filter current organization
   -a    show all events
@@ -62,11 +62,11 @@ fi
 echo "Token obtained"
 echo ""
 
-echo "App usage events metadata:"
+echo "Service usage events metadata:"
 if [ $show_all = 1 ]; then
- curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000" | jq 'del(.resources)'
+ curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/service_usage_events?results-per-page=100" | jq 'del(.resources)'
 else
- curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1" | jq 'del(.resources)'
+ curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/service_usage_events?results-per-page=1" | jq 'del(.resources)'
 fi
 echo ""
 
@@ -89,13 +89,13 @@ if [ $show_all = 1 ]; then
     echo "Done."
     echo ""
 
-    echo "Filtering page $page with 10000 usage events for org guid $ORG_GUID ..."
-    curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000&page=$page" | jq ".resources[] | select(.entity.org_guid == \"$ORG_GUID\")"
+    echo "Filtering page $page with 100 usage events for org guid $ORG_GUID ..."
+    curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/service_usage_events?results-per-page=100&page=$page" | jq ".resources[].entity | select(.org_guid == \"$ORG_GUID\")"
   else
-    echo "Listing page $page with 10000 usage events ..."
-    curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000&page=$page" | jq .
+    echo "Listing page $page with 100 usage events ..."
+    curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/service_usage_events?results-per-page=100&page=$page" | jq .
   fi
 else
-  echo "Get app usage event #$page..."
-  curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=1&page=$page"
+  echo "Get service usage event #$page..."
+  curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/service_usage_events?results-per-page=1&page=$page"
 fi
