@@ -49,6 +49,7 @@ fi
 URL="https://${ABACUS_PREFIX}abacus-healthchecker.$DOMAIN/v1/healthcheck"
 
 echo "Getting health from $URL ..."
+echo "curl -ks -u $HYSTRIX_CLIENT_ID:$HYSTRIX_CLIENT_SECRET -H \"Content-Type: application/json\" $URL"
 OUTPUT=$(curl -ks -u $HYSTRIX_CLIENT_ID:$HYSTRIX_CLIENT_SECRET -H "Content-Type: application/json" $URL)
 if [[ ! $OUTPUT =~ \{.*\} ]]; then
   echo ""
