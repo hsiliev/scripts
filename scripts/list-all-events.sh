@@ -12,11 +12,6 @@ Shows all events
 EOF
 }
 
-if [ -z "$ABACUS_CC_CLIENT_ID" ] || [ -z "$ABACUS_CC_CLIENT_SECRET" ]; then
-  echo "Missing ABACUS_CC_CLIENT_ID or ABACUS_CC_CLIENT_SECRET !"
-  exit 1
-fi
-
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
@@ -51,6 +46,14 @@ API=$(cf api | awk '{if (NR == 1) {print $3}}')
 AUTH_SERVER=${API/api./uaa.}
 echo "Using API URL $API"
 echo ""
+
+if [ -z "$ABACUS_CC_CLIENT_ID" ] || [ -z "$ABACUS_CC_CLIENT_SECRET" ]; then
+  echo "Reading system user id and secret ..."
+  cf target -o SAP_abacus -s abacus
+  ABACUS_CC_CLIENT_ID=$(cf env abacus-applications-bridge | grep CF_CLIENT_ID | awk '{ print $2 }')
+  ABACUS_CC_CLIENT_SECRET=$(cf env abacus-applications-bridge  | grep CF_CLIENT_SECRET | awk '{ print $2 }')
+  echo ""
+fi
 
 echo "Getting token for $ABACUS_CC_CLIENT_ID from $AUTH_SERVER ..."
 TOKEN=$(curl -k --user "$ABACUS_CC_CLIENT_ID:$ABACUS_CC_CLIENT_SECRET" -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials" | jq -r .access_token)

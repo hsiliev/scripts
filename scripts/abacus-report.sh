@@ -26,13 +26,18 @@ shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
 if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
-  echo "Missing CLIENT_ID or CLIENT_SECRET !"
-  exit 1
+  echo "Reading system user id and secret ..."
+  cf target -o SAP_abacus -s abacus
+  CLIENT_ID=$(cf env abacus-usage-collector-0 | grep CLIENT_ID | awk '{ print $2 }')
+  CLIENT_SECRET=$(cf env abacus-usage-collector-0 | grep CLIENT_SECRET | awk '{ print $2 }')
+  echo ""
 fi
+
 if [ -z "$1" ]; then
   echo "No organization specified !"
   exit 1
 fi
+
 SCOPE="abacus.usage.read"
 if [ -n "$RESOURCE_ID" ]; then
   SCOPE="abacus.usage.$RESOURCE_ID.read"
