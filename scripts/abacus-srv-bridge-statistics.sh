@@ -2,8 +2,10 @@
 set -e
 
 if [ -z "$SYSTEM_CLIENT_ID" ] || [ -z "$SYSTEM_CLIENT_SECRET" ]; then
-  echo "Missing SYSTEM_CLIENT_ID or SYSTEM_CLIENT_SECRET !"
-  exit 1
+  echo "Reading system user id and secret ..."
+  SYSTEM_CLIENT_ID=$(cf env abacus-usage-collector-0 | grep CLIENT_ID | awk '{ print $2 }')
+  SYSTEM_CLIENT_SECRET=$(cf env abacus-usage-collector-0 | grep CLIENT_SECRET | awk '{ print $2 }')
+  echo ""
 fi
 
 echo "Obtaining API endpoint URL ..."
@@ -33,8 +35,9 @@ echo "Using $URL"
 echo ""
 
 echo "Getting statistics ..."
+echo ">>> curl -ksH 'Authorization: bearer $TOKEN' $URL"
 set +e
-OUTPUT=$(curl -sH "Authorization: bearer $TOKEN" $URL | jq 'del(.performance)')
+OUTPUT=$(curl -ksH "Authorization: bearer $TOKEN" $URL | jq 'del(.performance)')
 set -e
 if [[ "$OUTPUT" == *"parse error"* ]] || [[ "$OUTPUT" == *"jq: error"* ]] || [[ -z "$OUTPUT" ]]; then
   echo ""
