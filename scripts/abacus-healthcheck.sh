@@ -25,8 +25,15 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
-if [ -z "$HYSTRIX_CLIENT_ID" ] || [ -z "$HYSTRIX_CLIENT_SECRET" ]; then
-  echo "Missing HYSTRIX_CLIENT_ID or HYSTRIX_CLIENT_SECRET !"
+if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
+  echo "Reading user id and secret from healthchecker env..."
+  CLIENT_ID=$(cf env abacus-healthchecker | grep CLIENT_ID | awk '{ print $2 }')
+  CLIENT_SECRET=$(cf env abacus-healthchecker | grep CLIENT_SECRET | awk '{ print $2 }')
+  echo ""
+fi
+
+if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
+  echo "Missing CLIENT_ID or CLIENT_SECRET !"
   exit 1
 fi
 
@@ -49,12 +56,12 @@ fi
 URL="https://${ABACUS_PREFIX}abacus-healthchecker.$DOMAIN/v1/healthcheck"
 
 echo "Getting health from $URL ..."
-echo "curl -ks -u $HYSTRIX_CLIENT_ID:$HYSTRIX_CLIENT_SECRET -H \"Content-Type: application/json\" $URL"
-OUTPUT=$(curl -ks -u $HYSTRIX_CLIENT_ID:$HYSTRIX_CLIENT_SECRET -H "Content-Type: application/json" $URL)
+echo "curl -iks -u $CLIENT_ID:$CLIENT_SECRET -H \"Content-Type: application/json\" $URL"
+OUTPUT=$(curl -ks -u $CLIENT_ID:$CLIENT_SECRET -H "Content-Type: application/json" $URL)
 if [[ ! $OUTPUT =~ \{.*\} ]]; then
   echo ""
   echo "No health data! Getting original response:"
-  curl -kis -u $HYSTRIX_CLIENT_ID:$HYSTRIX_CLIENT_SECRET -H "Content-Type: application/json" $URL
+  curl -kis -u $CLIENT_ID:$CLIENT_SECRET -H "Content-Type: application/json" $URL | jq .
 else
   echo $OUTPUT | jq .
 fi
