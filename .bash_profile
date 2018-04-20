@@ -44,8 +44,8 @@ export PATH=$PATH:$GOPATH/bin:$HOME/scripts:$HOME/bin
 # rbenv
 eval "$(rbenv init -)"
 
-export NVM_DIR=~/.nvm
-. $(brew --prefix nvm)/nvm.sh
+export NVM_DIR="$HOME/.nvm"
+. "/usr/local/opt/nvm/nvm.sh"
 
 # aliases
 alias ll="ls -laG"

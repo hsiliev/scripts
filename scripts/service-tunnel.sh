@@ -2,14 +2,15 @@
 
 set -e
 
-if [ -z "$1" ]; then
-  echo "No app name specified !"
-  exit 1
+app=$1
+if [ -z "$app" ]; then
+  app=abacus-housekeeper
 fi
+echo "Using application $app"
 
-services=$(cf env $1 | grep 'uri":' | sed -e 's/.*"uri": "//g' | sed -e 's/",//g')
+services=$(cf env $app | grep 'uri":' | sed -e 's/.*"uri": "//g' | sed -e 's/",//g')
 
-namesList=$(cf env $1 | awk "/mongodb:\/\//,/\"name\"/ {print}" | grep '"name":')
+namesList=$(cf env $app | awk "/mongodb:\/\//,/\"name\"/ {print}" | grep '"name":')
 namesList=$(echo $namesList | sed 's/\"name\": \"//g')
 namesList=$(echo $namesList | sed 's/\",//g')
 IFS=' ' read -r -a names <<< "$namesList"
@@ -35,7 +36,7 @@ for url in $services; do
 
   IFS=', ' read -r -a mongoIPs <<< "$mongoInstances"
   for ip in "${mongoIPs[@]}"; do
-    cf ssh -N -L $port:$ip $1 &
+    cf ssh -N -L $port:$ip $app &
     sleep 4
     connectionString=${url/$mongoInstances/localhost:$port}
     connectionString=${connectionString%\?*}
