@@ -69,7 +69,7 @@ echo ""
 
 echo "Reading events metadata ..."
 EVENTS=$(curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/app_usage_events?results-per-page=10000" | jq '.total_results')
-PAGES=$((EVENTS / 100 + 1))
+PAGES=$((EVENTS / 10000 + 1))
 echo "   events: $EVENTS"
 echo "   pages : $PAGES"
 echo ""
