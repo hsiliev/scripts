@@ -22,19 +22,23 @@ fi
 EVAL_SCRIPT="db.getCollectionNames().forEach(function(collectionName) {
     if ( collectionName.match(/abacus-.*$YEAR$MONTH/) ) {
       var result = db.getCollection(collectionName).remove({
-        organization_id: { $in:[
-          "08d38300-bcfe-40c8-b89d-d6ecc1b84a6a",
-          "b71fc53b-7518-4d2b-b8da-00aaed032e0c",
-          "b9bd6457-1b8e-421f-bcb1-3f5259ece518",
-          "0f1a2a1e-6db5-46ee-8d66-c3e41167711d"
+        organization_id: { \$in:[
+          '08d38300-bcfe-40c8-b89d-d6ecc1b84a6a',
+          'b71fc53b-7518-4d2b-b8da-00aaed032e0c',
+          'b9bd6457-1b8e-421f-bcb1-3f5259ece518',
+          '0f1a2a1e-6db5-46ee-8d66-c3e41167711d'
         ]}
       });
       print(collectionName + ' ' + result);
     }
 })"
 
+echo "$EVAL_SCRIPT"
+
 for CON in "${CONNECTIONS[@]}"; do
   mongo "$CON" --quiet --eval "$EVAL_SCRIPT" &
 done
+
+wait
 
 echo "Done.                                                   "
