@@ -43,7 +43,7 @@ for url in $services; do
     isMaster=$(mongo $connectionString --quiet --eval "d=db.isMaster(); print( d['ismaster'] );")
     if [ "$isMaster" == "true" ]; then
       echo "${names[$i]} URL: $connectionString"
-      connections+=$connectionString
+      connections+=($connectionString)
     fi
     port=$((port+1))
   done
@@ -56,4 +56,7 @@ for url in $services; do
   i=$((i+1))
 done
 
-echo "Connections: ${connections[@]}"
+echo ""
+echo "CONNECTIONS=("
+printf "\"%s\"\n" "${connections[@]}"
+echo ")"
