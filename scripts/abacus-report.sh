@@ -84,7 +84,9 @@ if [ -z "$DOMAIN" ] || [ "$DOMAIN" == 'Failed' ]; then
   exit 1
 fi
 
-DATE_IN_MS="$(date +%s000)"
+if [[ -z $DATE_IN_MS ]]; then
+  DATE_IN_MS="$(date +%s000)"
+fi
 URL="https://${ABACUS_PREFIX}abacus-usage-reporting.$DOMAIN/v1/metering/organizations/${ORG_GUID}/aggregated/usage/$DATE_IN_MS"
 
 echo "Using $URL"

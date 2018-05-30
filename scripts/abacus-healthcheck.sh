@@ -27,8 +27,8 @@ shift $((OPTIND-1))
 
 if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
   echo "Reading user id and secret from healthchecker env..."
-  CLIENT_ID=$(cf env abacus-healthchecker | grep CLIENT_ID | awk '{ print $2 }')
-  CLIENT_SECRET=$(cf env abacus-healthchecker | grep CLIENT_SECRET | awk '{ print $2 }')
+  CLIENT_ID=$(cf env ${ABACUS_PREFIX}abacus-healthchecker | grep -w CLIENT_ID | awk '{ print $2 }')
+  CLIENT_SECRET=$(cf env ${ABACUS_PREFIX}abacus-healthchecker | grep -w CLIENT_SECRET | awk '{ print $2 }')
   echo ""
 fi
 

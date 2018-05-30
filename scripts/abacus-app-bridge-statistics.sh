@@ -4,8 +4,8 @@ set -e
 if [ -z "$SYSTEM_CLIENT_ID" ] || [ -z "$SYSTEM_CLIENT_SECRET" ]; then
   echo "Reading system user id and secret ..."
   cf target -o SAP_abacus -s abacus
-  SYSTEM_CLIENT_ID=$(cf env abacus-usage-collector-0 | grep CLIENT_ID | awk '{ print $2 }')
-  SYSTEM_CLIENT_SECRET=$(cf env abacus-usage-collector-0 | grep CLIENT_SECRET | awk '{ print $2 }')
+  SYSTEM_CLIENT_ID=$(cf env abacus-usage-collector-0 | grep -w CLIENT_ID | awk '{ print $2 }')
+  SYSTEM_CLIENT_SECRET=$(cf env abacus-usage-collector-0 | grep -w CLIENT_SECRET | awk '{ print $2 }')
   echo ""
 fi
 
