@@ -1,31 +1,5 @@
 #!/usr/bin/env bash
 
-function goto {
-  local p
-  local f
-
-  for p in `echo $GOPATH | tr ':' '\n'`; do
-    f=`find ${p}/src -type d -not -path '*/.*' | grep "${1}" | awk '{ print length, $0 }' | sort -n | cut -d" " -f2- | head -n 1`
-    if [ -n "$f" ]; then
-      cd $f
-      return
-    fi
-  done
-
-  workto "$@"
-}
-
-function workto {
-  local p
-  local f
-
-  f=`find ~/workspace -type d -not -path '*/.*' | grep "${1}" | awk '{ print length, $0 }' | sort -n | cut -d" " -f2- | head -n 1`
-  if [ -n "$f" ]; then
-    cd $f
-    return
-  fi
-}
-
 # Go Settings
 export GOPATH=~/workspace/Go
 launchctl setenv GOPATH $GOPATH
@@ -37,9 +11,10 @@ export GOOS=darwin
 launchctl setenv GOOS $GOOS
 export GOARCH=amd64
 launchctl setenv GOARCH $GOARCH
+export PATH=$PATH:$GOPATH/bin:$HOME/scripts:$HOME/bin;
 
-# Path
-export PATH=$PATH:$GOPATH/bin:$HOME/scripts:$HOME/bin
+# Homebrew
+export PATH=$PATH:/usr/local/sbin
 
 # rbenv
 eval "$(rbenv init -)"
@@ -138,19 +113,6 @@ cd $HOME/workspace
 # abacus dev
 export ABACUS_HOME=/Users/development/workspace/cf-abacus
 export NO_ISTANBUL=true
-
-function abacus-module {
-  local p
-  local f
-
-  for p in `echo $ABACUS_HOME | tr ':' '\n'`; do
-    f=`find ${p}/lib -type d -not -path '*/.*' | grep "${1}" | awk '{ print length, $0 }' | sort -n | cut -d" " -f2- | head -n 1`
-    if [ -n "$f" ]; then
-      cd $f
-      return
-    fi
-  done
-}
 
 # iTerm shell integration
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
