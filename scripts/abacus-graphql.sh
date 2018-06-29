@@ -7,17 +7,21 @@ Usage: ${0##*/} [-ha] <query>
 
 Get org usage
   -h,-? display this help and exit
+  -e    encode query string
 EOF
 }
 
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
-while getopts "h?a" opt; do
+while getopts "h?e" opt; do
     case "$opt" in
       h|\?)
         show_help
         exit 0
+        ;;
+      e)
+        encode=1
         ;;
     esac
 done
@@ -26,9 +30,16 @@ shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
 if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
+  echo "Reading user id and secret from collector env..."
+  CLIENT_ID=$(cf env ${ABACUS_PREFIX}abacus-applications-bridge | grep -w CLIENT_ID | awk '{ print $2 }')
+  CLIENT_SECRET=$(cf env ${ABACUS_PREFIX}abacus-applications-bridge | grep -w CLIENT_SECRET | awk '{ print $2 }')
+  echo ""
+fi
+if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
   echo "Missing CLIENT_ID or CLIENT_SECRET !"
   exit 1
 fi
+
 if [ -z "$1" ]; then
   echo "No organization specified !"
   exit 1
@@ -70,7 +81,11 @@ fi
 
 DATE_IN_MS="$(date +%s000)"
 URL="https://${ABACUS_PREFIX}abacus-usage-reporting.$DOMAIN/v1/metering/aggregated/usage/graph/"
-QUERY=$(node -p "encodeURIComponent('$1')")
+if [[ encode == 1 ]]; then
+  QUERY=$(node -p "encodeURIComponent('$1')")
+else
+  QUERY=$1
+fi
 
 echo "Using $URL"
 echo ""
