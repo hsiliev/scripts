@@ -25,7 +25,8 @@ if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
 fi
 
 echo "Getting token for $CLIENT_ID with scope $SCOPE from $AUTH_SERVER ..."
-TOKEN=$(curl --user $CLIENT_ID:$CLIENT_SECRET -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=$SCOPE" | jq -r .access_token)
+echo ">>> curl --user $CLIENT_ID:$CLIENT_SECRET -k -s '$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=$SCOPE'"
+TOKEN=$(curl --user $CLIENT_ID:$CLIENT_SECRET -k -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials&scope=$SCOPE" | jq -r .access_token)
 if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
   echo "No token found ! Are your credentials correct (CLIENT_ID and CLIENT_SECRET)?"
   exit 1
@@ -81,5 +82,5 @@ BODY="{\"start\":$DATE_IN_MS,\"end\":$DATE_IN_MS,\"organization_id\":\"$ORG_GUID
 BODY="{\"start\":$DATE_IN_MS,\"end\":$DATE_IN_MS,\"organization_id\":\"$ORG_GUID\",\"space_id\":\"$SPACE_GUID\",\"consumer_id\":\"na\",\"resource_id\":\"1dc0754a-fdaf-4da7-89a1-d10124a5068c\",\"plan_id\":\"1dc0754a-fdaf-4da7-89a1-d10124a5068c-1dc0754a-fdaf-4da7-89a1-d10124a5068c\",\"resource_instance_id\":\"73109c5e-76ae-40db-843a-7ab234abadfd\",\"measured_usage\":[{\"measure\":\"api_calls\",\"quantity\":3545}]}"
 BODY="{\"start\":$DATE_IN_MS,\"end\":$DATE_IN_MS,\"organization_id\":\"$ORG_GUID\",\"space_id\":\"$SPACE_GUID\",\"resource_id\":\"linux-container\",\"plan_id\":\"basic\",\"consumer_id\":\"app:cb5c53de-42fb-40de-a54a-8053210b55c6\",\"resource_instance_id\":\"memory:cb5c53de-42fb-40de-a54a-8053210b55c6\",\"measured_usage\":[{\"measure\":\"current_instance_memory\",\"quantity\":268435456},{\"measure\":\"current_running_instances\",\"quantity\":100},{\"measure\":\"previous_instance_memory\",\"quantity\":0},{\"measure\":\"previous_running_instances\",\"quantity\":0}]}"
 
-echo ">>> curl -i -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' -X POST -d $BODY $URL"
-curl -i -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" -X POST -d $BODY $URL
+echo ">>> curl -ik -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' -X POST -d $BODY $URL"
+curl -ik -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" -X POST -d $BODY $URL
