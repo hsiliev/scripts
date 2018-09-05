@@ -36,8 +36,8 @@ for url in $services; do
 
   IFS=', ' read -r -a mongoIPs <<< "$mongoInstances"
   for ip in "${mongoIPs[@]}"; do
-    cf ssh -N -L $port:$ip "$ABACUS_PREFIX$app" &
-    sleep 4
+    cf ssh -N -T -L $port:$ip "$ABACUS_PREFIX$app" &
+    sleep 10
     connectionString=${url/$mongoInstances/localhost:$port}
     connectionString=${connectionString%\?*}
     isMaster=$(mongo $connectionString --quiet --eval "d=db.isMaster(); print( d['ismaster'] );")
