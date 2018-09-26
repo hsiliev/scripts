@@ -3,7 +3,7 @@ set -e
 
 function show_help {
   cat << EOF
-Usage: ${0##*/} [-ha] <query>
+Usage: ${0##*/} [-he] <query>
 
 Get org usage
   -h,-? display this help and exit
@@ -81,7 +81,8 @@ fi
 
 DATE_IN_MS="$(date +%s000)"
 URL="https://${ABACUS_PREFIX}abacus-usage-reporting.$DOMAIN/v1/metering/aggregated/usage/graph/"
-if [[ encode == 1 ]]; then
+if [[ $encode == 1 ]]; then
+  echo "URI encoding query ..."
   QUERY=$(node -p "encodeURIComponent('$1')")
 else
   QUERY=$1
@@ -91,5 +92,5 @@ echo "Using $URL"
 echo ""
 
 echo "Getting report with query $1 from $URL ..."
-echo ">>> curl -ksG -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' $URL$QUERY | jq ."
+echo ">>> curl -ksG -H 'Authorization: bearer $TOKEN' -H 'Content-Type: application/json' '$URL$QUERY' | jq ."
 curl -ksG -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" $URL$QUERY | jq .
