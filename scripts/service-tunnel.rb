@@ -31,7 +31,7 @@ environment_variables.each do |variable|
     addresses = concatenated_addresses.split(',')
 
     addresses.each do |address|
-      Process.spawn(%(cf ssh -N -T -L #{port}:#{address} "#{ENV['ABACUS_PREFIX']}#{app}"))
+      Process.spawn(%(cf ssh -N -T -L #{port}:#{address} "#{prefixed_app}"))
       sleep 10
 
       connection_string = "localhost:#{port}"
