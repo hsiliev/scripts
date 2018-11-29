@@ -6,7 +6,7 @@ app = ARGV[0] || 'abacus-housekeeper'
 prefixed_app = "#{ENV['ABACUS_PREFIX']}#{app}"
 puts "Using application #{prefixed_app}"
 
-environment_variables = `cf env "#{prefixed_app}" | grep -E 'DB_.*_URI'`.split("\n")
+environment_variables = `cf env "#{prefixed_app}" | grep -E 'DB.*URI'`.split("\n")
 raise "Cannot get environment for application #{prefixed_app}. Are you logged in Cloud Foundry?" unless $?.exitstatus.zero?
 
 port = 27018
@@ -22,7 +22,7 @@ environment_variables.each do |variable|
   name = name[3..-5].downcase
   uris = concatenated_uris.split('|')
 
-  puts "   Establishing tunnel for #{name} ..."
+  puts "   Establishing tunnel #{name.empty? ? '' : "for #{name} "}..."
 
   uris.each do |uri|
     break if processed_uris.include?(uri)
