@@ -9,8 +9,15 @@ git remote add origin https://github.com/hsiliev/workstation-scripts.git
 git fetch
 git checkout -t origin/master
 
-brew install direnv rbenv
+mkdir workspace
+
+brew install direnv rbenv go nvm
 brew cask install java
+
+echo kern.maxfiles=65536 | sudo tee -a /etc/sysctl.conf
+echo kern.maxfilesperproc=2048 | sudo tee -a /etc/sysctl.conf
+sudo sysctl -w kern.maxfiles=65536
+sudo sysctl -w kern.maxfilesperproc=2048
 ```
 
 ## Subsequent clones
