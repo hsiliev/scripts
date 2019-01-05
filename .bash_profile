@@ -102,7 +102,7 @@ launchctl setenv PATH $PATH
 # http://docs.basho.com/riak/latest/ops/tuning/open-files-limit/
 #
 ulimit -n 65536
-ulimit -u 2048
+ulimit -u 1024
 
 # fix for MacVIM, Python, YCM & vim incompatibility
 export DYLD_FORCE_FLAT_NAMESPACE=1

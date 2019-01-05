@@ -8,12 +8,12 @@ mkdir -p workspace
 git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
 
 # Install dependencies
-brew install direnv rbenv go nvm
+brew install direnv rbenv go nvm wget tig mc
 brew cask install java
 
 # Increase limits
-sudo cp setup/limit.maxfiles.plist /Library/LaunchDaemons
-sudo cp setup/limit.maxproc.plist /Library/LaunchDaemons
+sudo cp limits/limit.maxfiles.plist /Library/LaunchDaemons
+sudo cp limits/limit.maxproc.plist /Library/LaunchDaemons
 sudo chown root:wheel /Library/LaunchDaemons/limit.maxfiles.plist
 sudo chown root:wheel /Library/LaunchDaemons/limit.maxproc.plist
 sudo launchctl load -w /Library/LaunchDaemons/limit.maxfiles.plist
