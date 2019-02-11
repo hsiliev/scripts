@@ -23,7 +23,7 @@ if [ -n "$SECURED" ]; then
   echo ""
 fi
 
-url="http://localhost:9088/v1/metering/organizations/$org_guid/aggregated/usage"
+url="http://localhost:9088/v1/metering/organizations/$org_guid/aggregated/usage/$DATE_IN_MS"
 echo "Getting usage from $url ..."
 if [ -n "$SECURED" ]; then
   echo "curl -k -H 'Content-Type: application/json' -H 'Authorization: bearer $token' $url"
