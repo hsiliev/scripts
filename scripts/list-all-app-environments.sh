@@ -41,4 +41,4 @@ echoerr "Apps: $APPS"
 echoerr "Processes: $processes"
 echoerr ""
 
-seq 1 $APPS | xargs -P 5 -n 1 list-app-environment.sh
+seq 1 $APPS | xargs -P $processes -n 1 list-app-environment.sh

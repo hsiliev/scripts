@@ -15,4 +15,5 @@ org_name=$(cf curl $org_url | jq --raw-output .entity.name)
 
 environment=$(cf curl /v2/apps/$app_guid/env | jq -c .)
 
-echo "#$1: organization $org_name, space $space_name, app $app_name, env: $environment"
+echo "#$1" >&2;
+echo "organization $org_name, space $space_name, app $app_name, env: $environment"
