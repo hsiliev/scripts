@@ -7,22 +7,17 @@ Usage: ${0##*/} [-hao:] <page number>
 
 Shows all apps
   -h    display this help and exit
+  -a    display all pages
   -o    filter organization
-  -a    show all events
 EOF
 }
-
-if [ -z "$ABACUS_CC_CLIENT_ID" ] || [ -z "$ABACUS_CC_CLIENT_SECRET" ]; then
-  echo "Missing ABACUS_CC_CLIENT_ID or ABACUS_CC_CLIENT_SECRET !"
-  exit 1
-fi
 
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
 # Initialize our own variables
-show_all=0
 filter_org=0
+all_pages=0
 page=$1
 
 while getopts "hao:" opt; do
@@ -32,7 +27,7 @@ while getopts "hao:" opt; do
         exit 0
         ;;
       a)
-        show_all=1
+        all_pages=1
         ;;
       o)
         filter_org=1
@@ -47,29 +42,14 @@ shift $((OPTIND-1))
 echo "Arguments: show_all='$show_all', org='$ORG_GUID', page='$page', Leftovers: $@"
 echo ""
 
-echo "Obtaining API endpoint URL ..."
-API=$(cf api | awk '{if (NR == 1) {print $3}}')
-AUTH_SERVER=${API/api./uaa.}
-echo "Using API URL $API"
-echo ""
-
-echo "Getting token for $ABACUS_CC_CLIENT_ID from $AUTH_SERVER ..."
-TOKEN=$(curl -k --user "$ABACUS_CC_CLIENT_ID:$ABACUS_CC_CLIENT_SECRET" -s "$AUTH_SERVER/oauth/token?grant_type=client_credentials" | jq -r .access_token)
-if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
-  echo "No token found ! Are your credentials correct (ABACUS_CC_CLIENT_ID and ABACUS_CC_CLIENT_SECRET)?"
-  exit 1
-fi
-echo "Token $TOKEN obtained"
-echo ""
-
 echo "Events metadata:"
-EVENTS=$(curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/apps?results-per-page=1" | jq '.total_results')
+EVENTS=$(cf curl "/v2/apps?results-per-page=1" | jq '.total_results')
 PAGES=$((EVENTS / 100 + 1))
 echo "   events: $EVENTS"
 echo "   pages : $PAGES"
 echo ""
 
-if [ $show_all = 1 ]; then
+if [ $all_pages = 1 ]; then
   FILTER=""
 
   if [[ $filter_org = 1 ]]; then
@@ -95,7 +75,7 @@ if [ $show_all = 1 ]; then
 
   for ((i=1;i<=PAGES;i++)); do
     echo "Listing events on page: $i ..."
-    curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/apps?results-per-page=100&page=$i$FILTER" | jq ".resources[].entity"
+    cf curl "/v2/apps?results-per-page=100&page=$i$FILTER" | jq ".resources[].entity"
   done
 else
   if [ -z $page ]; then
@@ -104,5 +84,5 @@ else
   fi
 
   echo "Get app usage event #$page..."
-  curl -sk -H "Authorization: bearer $TOKEN" -H "Content-Type: application/json" "$API/v2/apps?results-per-page=1&page=$page"
+  cf curl "/v2/apps?results-per-page=1&page=$page"
 fi
