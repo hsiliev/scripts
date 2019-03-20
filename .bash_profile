@@ -3,9 +3,7 @@
 # Go Settings
 export GOPATH=~/workspace/Go
 launchctl setenv GOPATH $GOPATH
-GOVERSION=$(brew list go | head -n 1 | cut -d '/' -f 6)
-export GOROOT=$(brew --prefix)/Cellar/go/$GOVERSION/libexec
-#export GOROOT=/usr/local/go
+export GOROOT=$(go env GOROOT)
 launchctl setenv GOROOT $GOROOT
 export GOOS=darwin
 launchctl setenv GOOS $GOOS
