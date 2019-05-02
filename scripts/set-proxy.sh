@@ -49,4 +49,4 @@ EOF
 fi
 
 # Reset DNS cache
-$HOME/scripts/dnsflush.sh
+# $HOME/scripts/dnsflush.sh

@@ -24,4 +24,4 @@ if [ -e $HOME/.m2/settings.xml ]; then
 fi
 
 # Reset DNS cache
-$HOME/scripts/dnsflush.sh
+# $HOME/scripts/dnsflush.sh
