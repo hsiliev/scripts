@@ -28,7 +28,7 @@ alias unset-proxy="source $HOME/scripts/unset-proxy.sh"
 alias watch="watch -c"
 
 # Java
-export JAVA_HOME=`/usr/libexec/java_home -v 11`
+export JAVA_HOME=$(/usr/libexec/java_home)
 launchctl setenv JAVA_HOME $JAVA_HOME
 
 # Maven
