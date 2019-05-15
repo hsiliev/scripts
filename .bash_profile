@@ -3,12 +3,6 @@
 # Go Settings
 export GOPATH=~/workspace/Go
 launchctl setenv GOPATH $GOPATH
-export GOROOT=$(go env GOROOT)
-launchctl setenv GOROOT $GOROOT
-export GOOS=darwin
-launchctl setenv GOOS $GOOS
-export GOARCH=amd64
-launchctl setenv GOARCH $GOARCH
 export PATH=$PATH:$GOPATH/bin:$HOME/scripts:$HOME/bin;
 
 # Homebrew
