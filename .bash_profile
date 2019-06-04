@@ -99,9 +99,6 @@ ulimit -u 1024
 # fix for MacVIM, Python, YCM & vim incompatibility
 export DYLD_FORCE_FLAT_NAMESPACE=1
 
-# go to workspace
-cd $HOME/workspace
-
 # abacus dev
 export ABACUS_HOME=/Users/development/workspace/cf-abacus
 export NO_ISTANBUL=true
@@ -115,3 +112,17 @@ export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
 
 # kubectl
 source <(kubectl completion bash)
+
+# append history instead of rewriting it
+shopt -s histappend
+# allow a larger history file
+export HISTFILESIZE=1000000
+export HISTSIZE=1000000
+# ignore duplicates and commands that start with space
+export HISTCONTROL=ignoreboth
+# ignore these commands
+export HISTIGNORE='ls:bg:fg:history'
+# record timestamps
+export HISTTIMEFORMAT='%F %T '
+# use one command per line
+shopt -s cmdhist
