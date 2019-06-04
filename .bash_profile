@@ -126,3 +126,6 @@ export HISTIGNORE='ls:bg:fg:history'
 export HISTTIMEFORMAT='%F %T '
 # use one command per line
 shopt -s cmdhist
+
+# go to working directory
+cd workspace
