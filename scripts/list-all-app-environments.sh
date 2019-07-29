@@ -47,4 +47,9 @@ echoerr "Processes: $processes"
 echoerr "App number: $app_number"
 echoerr ""
 
-seq $app_number $APPS | xargs -P $processes -n 1 list-app-environment.sh
+SCRIPT_DIR="${BASH_SOURCE%/*}"
+if [[ ! -d "$SCRIPT_DIR" ]]; then
+  SCRIPT_DIR="$PWD";
+fi
+
+seq $app_number $APPS | xargs -P $processes -n 1 "$SCRIPT_DIR/list-app-environment.sh"
