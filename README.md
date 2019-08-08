@@ -16,7 +16,7 @@ git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
 
 # Install dependencies
 brew install direnv rbenv go nvm
-brew cask install java
+brew cask install adoptopenjdk
 
 # Setup kernel limits. Needs restart
 echo kern.maxfiles=65536 | sudo tee -a /etc/sysctl.conf
