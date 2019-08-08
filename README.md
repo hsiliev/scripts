@@ -15,7 +15,7 @@ mkdir workspace
 git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
 
 # Install dependencies
-brew install direnv rbenv go nvm
+brew install direnv rbenv go nvm kubectl
 brew cask install adoptopenjdk
 
 # Setup kernel limits. Needs restart
