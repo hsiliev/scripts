@@ -9,7 +9,6 @@ git init
 git remote add origin https://github.com/hsiliev/workstation-scripts.git
 git fetch
 git checkout -t origin/master
-mkdir workspace
 
 # Run the setup script
 ./setup
