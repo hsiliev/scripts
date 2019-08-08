@@ -8,8 +8,8 @@ mkdir -p workspace
 git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
 
 # Install dependencies
-brew install direnv rbenv go nvm wget tig mc bash
-brew cask install java
+brew install direnv rbenv go nvm wget tig mc bash kubectl
+brew cask install adoptopenjdk
 
 # Increase limits
 sudo cp limits/limit.maxfiles.plist /Library/LaunchDaemons
