@@ -11,18 +11,8 @@ git fetch
 git checkout -t origin/master
 mkdir workspace
 
-# Install bash-it
-git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
-
-# Install dependencies
-brew install direnv rbenv go nvm kubectl
-brew cask install adoptopenjdk
-
-# Setup kernel limits. Needs restart
-echo kern.maxfiles=65536 | sudo tee -a /etc/sysctl.conf
-echo kern.maxfilesperproc=2048 | sudo tee -a /etc/sysctl.conf
-sudo sysctl -w kern.maxfiles=65536
-sudo sysctl -w kern.maxfilesperproc=2048
+# Run the setup script
+./setup
 ```
 
 ## Subsequent clones
