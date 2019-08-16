@@ -41,7 +41,10 @@ export BASH_IT=$HOME/.bash_it
 
 # Lock and Load a custom theme file
 # location /.bash_it/themes/
-export BASH_IT_THEME='bobby'
+#export BASH_IT_THEME='bobby'
+
+export PS1="\n\[\e[33m\]\w\[\e[m\] \$ "
+export TERM="screen-256color"
 
 # Your place for hosting Git repos. I use this for private repos.
 export GIT_HOSTING='git@git.domain.com'
@@ -93,8 +96,8 @@ launchctl setenv PATH $PATH
 # The real increase happens on system level via
 # http://docs.basho.com/riak/latest/ops/tuning/open-files-limit/
 #
-ulimit -n 65536
-ulimit -u 2048
+#ulimit -n 524288
+#ulimit -u 1024
 
 # fix for MacVIM, Python, YCM & vim incompatibility
 export DYLD_FORCE_FLAT_NAMESPACE=1
