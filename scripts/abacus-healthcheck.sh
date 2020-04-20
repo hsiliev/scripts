@@ -54,8 +54,9 @@ if [ -z "$DOMAIN" ]; then
 fi
 
 URL="https://${ABACUS_PREFIX}abacus-healthchecker.$DOMAIN/v1/healthcheck"
+URL_INTERNAL="https://${ABACUS_PREFIX}abacus-healthchecker.$DOMAIN/v1/healthcheck/internal"
 
-echo "Getting health from $URL ..."
+echo "Getting client-facing health from $URL ..."
 echo "curl -iks -u $CLIENT_ID:$CLIENT_SECRET -H \"Content-Type: application/json\" $URL"
 OUTPUT=$(curl -ks -u $CLIENT_ID:$CLIENT_SECRET -H "Content-Type: application/json" $URL)
 if [[ ! $OUTPUT =~ \{.*\} ]]; then
@@ -65,3 +66,15 @@ if [[ ! $OUTPUT =~ \{.*\} ]]; then
 else
   echo $OUTPUT | jq .
 fi
+
+echo "Getting internal health from $URL_INTERNAL ..."
+echo "curl -iks -u $CLIENT_ID:$CLIENT_SECRET -H \"Content-Type: application/json\" $URL_INTERNAL"
+OUTPUT_INTERNAL=$(curl -ks -u $CLIENT_ID:$CLIENT_SECRET -H "Content-Type: application/json" $URL_INTERNAL)
+if [[ ! $OUTPUT_INTERNAL =~ \{.*\} ]]; then
+  echo ""
+  echo "No health data! Getting original response:"
+  curl -kis -u $CLIENT_ID:$CLIENT_SECRET -H "Content-Type: application/json" $URL_INTERNAL | jq .
+else
+  echo $OUTPUT_INTERNAL | jq .
+fi
+

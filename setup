@@ -1,0 +1,24 @@
+#!/bin/sh
+
+cd ~
+
+mkdir -p workspace
+
+# Install bash-it
+git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
+
+# Install dependencies
+brew install direnv rbenv go nvm wget tig mc bash kubectl
+brew cask install adoptopenjdk
+
+# Increase limits
+sudo cp limits/limit.maxfiles.plist /Library/LaunchDaemons
+sudo cp limits/limit.maxproc.plist /Library/LaunchDaemons
+sudo chown root:wheel /Library/LaunchDaemons/limit.maxfiles.plist
+sudo chown root:wheel /Library/LaunchDaemons/limit.maxproc.plist
+sudo launchctl load -w /Library/LaunchDaemons/limit.maxfiles.plist
+sudo launchctl load -w /Library/LaunchDaemons/limit.maxproc.plist
+
+# Change shell to bash 4
+sudo bash -c 'echo /usr/local/bin/bash >> /etc/shells'
+chsh -s /usr/local/bin/bash

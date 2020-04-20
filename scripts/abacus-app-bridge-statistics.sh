@@ -4,8 +4,8 @@ set -e
 if [ -z "$SYSTEM_CLIENT_ID" ] || [ -z "$SYSTEM_CLIENT_SECRET" ]; then
   echo "Reading system user id and secret ..."
   cf target -o SAP_abacus -s abacus
-  SYSTEM_CLIENT_ID=$(cf env abacus-usage-collector-0 | grep -w CLIENT_ID | awk '{ print $2 }')
-  SYSTEM_CLIENT_SECRET=$(cf env abacus-usage-collector-0 | grep -w CLIENT_SECRET | awk '{ print $2 }')
+  SYSTEM_CLIENT_ID=$(cf env abacus-usage-collector | grep -w CLIENT_ID | awk '{ print $2 }')
+  SYSTEM_CLIENT_SECRET=$(cf env abacus-usage-collector | grep -w CLIENT_SECRET | awk '{ print $2 }')
   echo ""
 fi
 
@@ -25,7 +25,7 @@ echo "Token obtained"
 echo ""
 
 echo "Getting abacus-applications-bridge URL ..."
-URL=$(cf app ${ABACUS_PREFIX}abacus-applications-bridge | awk '{if (NR == 7) {print $2}}')
+URL=$(cf app ${ABACUS_PREFIX}abacus-applications-bridge | awk '{if (NR == 5) {print $2}}')
 
 if [ -z "$URL" ]; then
   echo "Cannot find URL! Have you targeted abacus org/space?"

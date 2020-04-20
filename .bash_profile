@@ -3,14 +3,6 @@
 # Go Settings
 export GOPATH=~/workspace/Go
 launchctl setenv GOPATH $GOPATH
-GOVERSION=$(brew list go | head -n 1 | cut -d '/' -f 6)
-export GOROOT=$(brew --prefix)/Cellar/go/$GOVERSION/libexec
-#export GOROOT=/usr/local/go
-launchctl setenv GOROOT $GOROOT
-export GOOS=darwin
-launchctl setenv GOOS $GOOS
-export GOARCH=amd64
-launchctl setenv GOARCH $GOARCH
 export PATH=$PATH:$GOPATH/bin:$HOME/scripts:$HOME/bin;
 
 # Homebrew
@@ -30,7 +22,7 @@ alias unset-proxy="source $HOME/scripts/unset-proxy.sh"
 alias watch="watch -c"
 
 # Java
-export JAVA_HOME=`/usr/libexec/java_home -v 10`
+export JAVA_HOME=$(/usr/libexec/java_home)
 launchctl setenv JAVA_HOME $JAVA_HOME
 
 # Maven
@@ -49,7 +41,10 @@ export BASH_IT=$HOME/.bash_it
 
 # Lock and Load a custom theme file
 # location /.bash_it/themes/
-export BASH_IT_THEME='bobby'
+#export BASH_IT_THEME='bobby'
+
+export PS1="\n\[\e[33m\]\w\[\e[m\] \$ "
+export TERM="screen-256color"
 
 # Your place for hosting Git repos. I use this for private repos.
 export GIT_HOSTING='git@git.domain.com'
@@ -101,14 +96,11 @@ launchctl setenv PATH $PATH
 # The real increase happens on system level via
 # http://docs.basho.com/riak/latest/ops/tuning/open-files-limit/
 #
-ulimit -n 65536
-ulimit -u 2048
+#ulimit -n 524288
+#ulimit -u 1024
 
 # fix for MacVIM, Python, YCM & vim incompatibility
 export DYLD_FORCE_FLAT_NAMESPACE=1
-
-# go to workspace
-cd $HOME/workspace
 
 # abacus dev
 export ABACUS_HOME=/Users/development/workspace/cf-abacus
@@ -118,6 +110,25 @@ export NO_ISTANBUL=true
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
 # BASH completion
-if [ -f $(brew --prefix)/etc/bash_completion ]; then
-. $(brew --prefix)/etc/bash_completion
-fi
+export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+
+# kubectl
+source <(kubectl completion bash)
+
+# append history instead of rewriting it
+shopt -s histappend
+# allow a larger history file
+export HISTFILESIZE=1000000
+export HISTSIZE=1000000
+# ignore duplicates and commands that start with space
+export HISTCONTROL=ignoreboth
+# ignore these commands
+export HISTIGNORE='ls:bg:fg:history'
+# record timestamps
+export HISTTIMEFORMAT='%F %T '
+# use one command per line
+shopt -s cmdhist
+
+# go to working directory
+cd workspace
