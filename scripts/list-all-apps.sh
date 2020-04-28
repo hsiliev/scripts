@@ -54,7 +54,6 @@ APPS=$(cf curl "/v2/apps?results-per-page=1" | jq '.total_results')
 PAGES=$(cf curl "/v2/apps?results-per-page=100" | jq '.total_pages')
 echoerr "   apps: $APPS"
 echoerr "   pages : $PAGES"
-echoerr "   pages : $PAGES"
 echoerr ""
 
 if [ $ALL_PAGES = 1 ]; then
@@ -87,8 +86,8 @@ if [ $ALL_PAGES = 1 ]; then
   fi
 
   for ((i=START_PAGE;i<=PAGES;i++)); do
-    echoerr "Listing apps on page: $i ..."
     cf curl "/v2/apps?results-per-page=100&page=$i$FILTER" | jq ".resources[].entity"
+    echoerr "Listed apps on page: $i ..."
   done
 else
   if [ -z "$PAGE" ]; then
